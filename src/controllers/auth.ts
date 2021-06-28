@@ -5,7 +5,10 @@ import jwt from "jsonwebtoken";
 import { accessTokenSecret, accessTokenExpiry } from "../config";
 import { userService, utilityService } from "../services";
 
-export const register = async (req: express.Request, res: express.Response) => {
+export const registerUser = async (
+  req: express.Request,
+  res: express.Response
+) => {
   try {
     const { email, password } = req.body;
     if (!email || !password)
@@ -18,7 +21,7 @@ export const register = async (req: express.Request, res: express.Response) => {
       // id: uuid(),
       email,
       auth: { password },
-      roles: [{ name: 'REGULAR' }],
+      roles: [{ name: "REGULAR" }],
     };
 
     const { err, data } = await userService.createUser(user);
@@ -27,17 +30,17 @@ export const register = async (req: express.Request, res: express.Response) => {
       return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
     }
 
-    return res
-      .status(200)
-      .json({ data: { id: data.id } });
-
+    return res.status(200).json({ data: { id: data.id } });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
   }
 };
 
-export const generateNewToken = async (req: express.Request, res: express.Response) => {
+export const generateNewToken = async (
+  req: express.Request,
+  res: express.Response
+) => {
   try {
     const { email, password } = req.body;
     if (!email || !password)
@@ -67,10 +70,7 @@ export const generateNewToken = async (req: express.Request, res: express.Respon
       { expiresIn: accessTokenExpiry }
     );
 
-    return res
-      .status(200)
-      .json({ data: { id: user.id, accessToken: token } });
-
+    return res.status(200).json({ data: { id: user.id, accessToken: token } });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });

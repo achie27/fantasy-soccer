@@ -1,15 +1,44 @@
 import { Router } from "express";
-import { playerController, authController } from "../controllers";
+import {
+  playerController,
+  authController,
+  validationController,
+} from "../controllers";
 
 const playerRouter = Router();
 
-playerRouter.post("/", authController.verifyRole(['ADMIN']), playerController.createNewPlayer);
-playerRouter.get("/", authController.verifyRole(['ADMIN', 'REGULAR']), playerController.fetchPlayers);
-playerRouter.get("/:playerId", authController.verifyRole(['ADMIN', 'REGULAR']), playerController.fetchPlayerById);
-playerRouter.put("/:playerId", authController.verifyRole(['ADMIN', 'REGULAR']), playerController.updatePlayerById);
-playerRouter.delete("/:playerId", authController.verifyRole(['ADMIN', 'REGULAR']), playerController.deletePlayerById);
+playerRouter.post(
+  "/",
+  authController.verifyRole(["ADMIN"]),
+  validationController.validateRequestBody("createNewPlayer"),
+  playerController.createNewPlayer
+);
+playerRouter.get(
+  "/",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("fetchPlayers"),
+  playerController.fetchPlayers
+);
+playerRouter.get(
+  "/:playerId",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("fetchPlayerById"),
+  playerController.fetchPlayerById
+);
+playerRouter.put(
+  "/:playerId",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("updatePlayerById"),
+  playerController.updatePlayerById
+);
+playerRouter.delete(
+  "/:playerId",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("deletePlayerById"),
+  playerController.deletePlayerById
+);
 
-playerRouter.use('*', (_, res) => {
+playerRouter.use("*", (_, res) => {
   return res.status(405).end();
 });
 

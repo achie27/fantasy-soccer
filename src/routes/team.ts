@@ -1,15 +1,44 @@
 import { Router } from "express";
-import { teamController, authController } from "../controllers";
+import {
+  teamController,
+  authController,
+  validationController,
+} from "../controllers";
 
 const teamRouter = Router();
 
-teamRouter.post("/", authController.verifyRole(['ADMIN', 'REGULAR']), teamController.createNewTeam);
-teamRouter.get("/", authController.verifyRole(['ADMIN', 'REGULAR']), teamController.fetchTeams);
-teamRouter.get("/:teamId", authController.verifyRole(['ADMIN', 'REGULAR']), teamController.fetchTeamById);
-teamRouter.put("/:teamId", authController.verifyRole(['ADMIN', 'REGULAR']), teamController.updateTeamById);
-teamRouter.delete("/:teamId", authController.verifyRole(['ADMIN']), teamController.deleteTeamById);
+teamRouter.post(
+  "/",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("createNewTeam"),
+  teamController.createNewTeam
+);
+teamRouter.get(
+  "/",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("fetchTeams"),
+  teamController.fetchTeams
+);
+teamRouter.get(
+  "/:teamId",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("fetchTeamById"),
+  teamController.fetchTeamById
+);
+teamRouter.put(
+  "/:teamId",
+  authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("updateTeamById"),
+  teamController.updateTeamById
+);
+teamRouter.delete(
+  "/:teamId",
+  authController.verifyRole(["ADMIN"]),
+  validationController.validateRequestBody("deleteTeamById"),
+  teamController.deleteTeamById
+);
 
-teamRouter.use('*', (_, res) => {
+teamRouter.use("*", (_, res) => {
   return res.status(405).end();
 });
 

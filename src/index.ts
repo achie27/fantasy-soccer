@@ -6,7 +6,13 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 
 import { serverPort, dbUri } from "./config";
-import { authRouter, userRouter, teamRouter, playerRouter, transferRouter } from "./routes";
+import {
+  authRouter,
+  userRouter,
+  teamRouter,
+  playerRouter,
+  transferRouter,
+} from "./routes";
 
 const app = express();
 
