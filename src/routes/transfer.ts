@@ -6,6 +6,7 @@ import {
 } from "../controllers";
 
 const transferRouter = Router();
+transferRouter.use(authController.populateUserContext);
 
 transferRouter.post(
   "/",

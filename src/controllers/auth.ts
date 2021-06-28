@@ -3,7 +3,7 @@ import validator from "validator";
 import jwt from "jsonwebtoken";
 
 import { accessTokenSecret, accessTokenExpiry } from "../config";
-import { userService, utilityService } from "../services";
+import { userService } from "../services";
 
 export const registerUser = async (
   req: express.Request,

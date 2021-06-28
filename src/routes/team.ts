@@ -6,6 +6,7 @@ import {
 } from "../controllers";
 
 const teamRouter = Router();
+teamRouter.use(authController.populateUserContext);
 
 teamRouter.post(
   "/",

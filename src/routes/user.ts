@@ -6,6 +6,7 @@ import {
 } from "../controllers";
 
 const userRouter = Router();
+userRouter.use(authController.populateUserContext);
 
 userRouter.post(
   "/",
