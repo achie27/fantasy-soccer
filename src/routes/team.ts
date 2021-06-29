@@ -17,13 +17,11 @@ teamRouter.post(
 teamRouter.get(
   "/",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchTeams"),
   teamController.fetchTeams
 );
 teamRouter.get(
   "/:teamId",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchTeamById"),
   teamController.fetchTeamById
 );
 teamRouter.put(
@@ -35,7 +33,6 @@ teamRouter.put(
 teamRouter.delete(
   "/:teamId",
   authController.verifyRole(["ADMIN"]),
-  validationController.validateRequestBody("deleteTeamById"),
   teamController.deleteTeamById
 );
 

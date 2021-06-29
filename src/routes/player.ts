@@ -17,13 +17,11 @@ playerRouter.post(
 playerRouter.get(
   "/",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchPlayers"),
   playerController.fetchPlayers
 );
 playerRouter.get(
   "/:playerId",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchPlayerById"),
   playerController.fetchPlayerById
 );
 playerRouter.put(
@@ -35,7 +33,6 @@ playerRouter.put(
 playerRouter.delete(
   "/:playerId",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("deletePlayerById"),
   playerController.deletePlayerById
 );
 

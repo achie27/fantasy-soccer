@@ -17,19 +17,16 @@ transferRouter.post(
 transferRouter.post(
   "/:transferId/buyPlayerNow",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("buyPlayerNow"),
   transferController.buyPlayerNow
 );
 transferRouter.get(
   "/",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchTransfers"),
   transferController.fetchTransfers
 );
 transferRouter.get(
   "/:transferId",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchTransferById"),
   transferController.fetchTransferById
 );
 transferRouter.put(
@@ -41,7 +38,6 @@ transferRouter.put(
 transferRouter.delete(
   "/:transferId",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("deleteTransferById"),
   transferController.deleteTransferById
 );
 

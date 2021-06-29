@@ -17,13 +17,11 @@ userRouter.post(
 userRouter.get(
   "/",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchUsers"),
   userController.fetchUsers
 );
 userRouter.get(
   "/:userId",
   authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("fetchUserById"),
   userController.fetchUserById
 );
 userRouter.put(
@@ -35,7 +33,6 @@ userRouter.put(
 userRouter.delete(
   "/:userId",
   authController.verifyRole(["ADMIN"]),
-  validationController.validateRequestBody("deleteUserById"),
   userController.deleteUserById
 );
 
