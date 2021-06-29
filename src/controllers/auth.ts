@@ -11,18 +11,8 @@ export const registerUser = async (
 ) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password)
-      return res.status(400).json({ error: "REQUIRED_FIELDS_MISSING" });
 
-    if (!validator.isEmail(email))
-      return res.status(400).json({ error: "INCORRECT_EMAIL" });
-
-    const user = {
-      // id: uuid(),
-      email,
-      auth: { password },
-      roles: [{ name: "REGULAR" }],
-    };
+    const user = { email, auth: { password } };
 
     const { err, data } = await userService.createUser(user);
     if (err) {
@@ -30,7 +20,7 @@ export const registerUser = async (
       return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
     }
 
-    return res.status(200).json({ data: { id: data.id } });
+    return res.status(200).json({ data: { userId: data.id } });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
