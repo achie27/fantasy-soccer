@@ -1,94 +1,62 @@
 import express from "express";
-import validator from "validator";
-import jwt from "jsonwebtoken";
 
-import { accessTokenSecret, accessTokenExpiry } from "../config";
-import { userService } from "../services";
+import { userService, authService } from "../services";
 
 export const registerUser = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const { email, password } = req.body;
-
     const user = { email, auth: { password } };
 
-    const { err, data } = await userService.createUser(user);
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
-    }
-
-    return res.status(200).json({ data: { userId: data.id } });
+    const createdUser = await userService.createUser(user);
+    return res.status(200).json({ data: { userId: createdUser.id } });
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const generateNewToken = async (
   req: express.Request,
-  res: express.Response
-) => {
+  res: express.Response,
+  next: express.NextFunction
+  ) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password)
-      return res.status(400).json({ error: "REQUIRED_FIELDS_MISSING" });
 
-    if (!validator.isEmail(email))
-      return res.status(400).json({ error: "INCORRECT_EMAIL" });
-
-    const { err, data: user } = await userService.getUser({
+    const user = await userService.getUser({
       email,
     });
 
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
-    }
-
-    if (!user.id || !user.email)
-      return res.status(400).json({ error: "USER_NOT_REGISTERED" });
-
-    if (!(await utilityService.compareHash(password, user?.auth?.password)))
+    if (!(await userService.comparePassword(password, user?.auth?.password)))
       return res.status(400).json({ error: "INCORRECT_PASSWORD" });
 
-    const token = jwt.sign(
-      { id: user.id, roles: user.roles },
-      accessTokenSecret,
-      { expiresIn: accessTokenExpiry }
-    );
+    const accessToken = authService.generateAccessToken(user);
 
-    return res.status(200).json({ data: { id: user.id, accessToken: token } });
+    return res.status(200).json({ data: { id: user.id, accessToken } });
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const populateUserContext = async (
-  req: express.Request,
+  req: express.Request & { context: Record<string, any> },
   res: express.Response,
   next: express.NextFunction
 ) => {
   try {
     const accessToken: string = req.header["access-token"];
     if (accessToken) {
-      try {
-        const decoded = jwt.verify(accessToken, accessTokenSecret);
-        req["context"] = { user: decoded };
-        next();
-      } catch (e) {
-        console.error(e);
-        return res.status(400).json({ error: "COULD_NOT_VERIFY_ACCESS_TOKEN" });
-      }
+      const decoded = authService.decodeAccessToken(accessToken);
+      req.context = { user: decoded };
+      next();
     } else {
       return res.status(403).end();
     }
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
@@ -100,33 +68,30 @@ export const verifyAuth = async (
   try {
     const accessToken: string = req.header["access-token"];
     if (accessToken) {
-      try {
-        jwt.verify(accessToken, accessTokenSecret);
+      const valid = authService.verifyAccessToken(accessToken);
+      if (valid)
         next();
-      } catch (e) {
-        console.error(e);
+      else
         return res.status(400).json({ error: "COULD_NOT_VERIFY_ACCESS_TOKEN" });
-      }
     } else {
       return res.status(403).end();
     }
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const verifyRole = (allowedRoles: string[]) => {
   return async (
-    req: express.Request,
+    req: express.Request & { context: Record<string, any> },
     res: express.Response,
     next: express.NextFunction
   ) => {
     try {
       let hasAccess: boolean = false;
 
-      req["context"]?.user?.roles.forEach(
-        (role: userService.IUser["roles"][0]) => {
+      req.context?.user?.roles.forEach(
+        (role) => {
           if (allowedRoles.includes(role.name)) hasAccess = true;
         }
       );
@@ -134,8 +99,7 @@ export const verifyRole = (allowedRoles: string[]) => {
       if (hasAccess) return next();
       return res.status(403).end();
     } catch (e) {
-      console.error(e);
-      return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+      next(e);
     }
   };
 };

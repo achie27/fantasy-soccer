@@ -2,55 +2,55 @@ import express from "express";
 
 export const createNewPlayer = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const fetchPlayers = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const fetchPlayerById = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const updatePlayerById = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const deletePlayerById = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };

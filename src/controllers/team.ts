@@ -2,55 +2,55 @@ import express from "express";
 
 export const createNewTeam = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const fetchTeams = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const fetchTeamById = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const updateTeamById = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };
 
 export const deleteTeamById = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ) => {
   try {
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+    next(e);
   }
 };

@@ -14,6 +14,9 @@ import {
   transferRouter,
 } from "./routes";
 
+import logger from './lib/logger';
+import { isContextualError } from './lib/exceptions';
+
 const app = express();
 
 app.use(helmet());
@@ -32,14 +35,26 @@ app.use("*", (req, res) => {
   return res.status(404).json({});
 });
 
+app.use((err, req, res, next) => {
+  if(isContextualError(err)) {
+    const errorCtx = err.getContext();
+    logger.error(errorCtx);
+
+    return res.status(errorCtx.httpResponseCode).json({ code: errorCtx.code, description: errorCtx.message });
+  } else {
+    logger.error(err);
+    return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
+  }
+});
+
 const server = app.listen(serverPort, async () => {
   try {
-    console.log("Server running");
+    logger.log("Server running");
     await mongoose.connect(dbUri);
     mongoose.set("debug", true);
   } catch (e) {
-    console.error(e);
-    console.log("Shutting down the app");
+    logger.error(e);
+    logger.log("Shutting down the app");
 
     server.close();
     process.exit(1);
@@ -47,9 +62,9 @@ const server = app.listen(serverPort, async () => {
 });
 
 process.on("uncaughtException", (err) => {
-  console.error(err);
+  logger.error(err);
 });
 
 process.on("unhandledRejection", (err) => {
-  console.error(err);
+  logger.error(err);
 });
