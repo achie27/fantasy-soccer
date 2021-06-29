@@ -14,8 +14,8 @@ import {
   transferRouter,
 } from "./routes";
 
-import logger from './lib/logger';
-import { isContextualError } from './lib/exceptions';
+import logger from "./lib/logger";
+import { isContextualError } from "./lib/exceptions";
 
 const app = express();
 
@@ -36,11 +36,13 @@ app.use("*", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  if(isContextualError(err)) {
+  if (isContextualError(err)) {
     const errorCtx = err.getContext();
     logger.error(errorCtx);
 
-    return res.status(errorCtx.httpResponseCode).json({ code: errorCtx.code, description: errorCtx.message });
+    return res
+      .status(errorCtx.httpResponseCode)
+      .json({ code: errorCtx.code, description: errorCtx.message });
   } else {
     logger.error(err);
     return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });

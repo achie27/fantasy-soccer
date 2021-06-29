@@ -1,36 +1,36 @@
 export default {
-  type: 'object',
+  type: "object",
   properties: {
     name: {
-      type: 'string'
+      type: "string",
     },
     country: {
-      type: 'string'
+      type: "string",
     },
     budget: {
-      type: 'number'
+      type: "number",
     },
     owner: {
-      type: 'object',
+      type: "object",
       properties: {
         id: {
-          type: 'string'
-        }
+          type: "string",
+        },
       },
-      required: ['id']
+      required: ["id"],
     },
     players: {
-      type: 'array',
+      type: "array",
       items: {
-        type: 'object',
+        type: "object",
         properties: {
           id: {
-            type: 'string'
-          }
+            type: "string",
+          },
         },
-        required: ['id']
-      }
-    }
+        required: ["id"],
+      },
+    },
   },
-  minProperties: 1
+  minProperties: 1,
 };

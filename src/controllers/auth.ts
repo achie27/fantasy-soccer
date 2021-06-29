@@ -1,6 +1,6 @@
 import express from "express";
 
-import { InvalidAccessToken, InadequatePermissions } from '../lib/exceptions';
+import { InvalidAccessToken, InadequatePermissions } from "../lib/exceptions";
 import { userService, authService } from "../services";
 
 export const registerUser = async (
@@ -23,7 +23,7 @@ export const generateNewToken = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
-  ) => {
+) => {
   try {
     const { email, password } = req.body;
 
@@ -66,10 +66,8 @@ export const verifyAuth = async (
     const accessToken: string = req.header["access-token"];
     if (accessToken) {
       const valid = authService.verifyAccessToken(accessToken);
-      if (valid)
-        next();
-      else
-        throw new InvalidAccessToken(accessToken);
+      if (valid) next();
+      else throw new InvalidAccessToken(accessToken);
     } else {
       return res.status(403).end();
     }
@@ -87,11 +85,9 @@ export const verifyRole = (allowedRoles: string[]) => {
     try {
       let hasAccess: boolean = false;
 
-      req.context?.user?.roles.forEach(
-        (role) => {
-          if (allowedRoles.includes(role.name)) hasAccess = true;
-        }
-      );
+      req.context?.user?.roles.forEach((role) => {
+        if (allowedRoles.includes(role.name)) hasAccess = true;
+      });
 
       if (hasAccess) return next();
 
