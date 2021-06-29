@@ -47,7 +47,7 @@ export class UserNotFound extends BaseContextualError {
 
 export class InvalidAccessToken extends BaseContextualError {
   constructor(token: string) {
-    super(`${token} is invalid`, 'INVALID_ACCESS_TOKEN', 400);
+    super(`'${token}' is invalid`, 'INVALID_ACCESS_TOKEN', 400);
   }
 };
 
@@ -57,8 +57,8 @@ export class InadequatePermissions extends BaseContextualError {
   }
 };
 
-// export class InadequatePermissions extends BaseContextualError {
-//   constructor() {
-//     super(`You don't have the necessary permissions for this`, 'INADEQUATE_PERMISSIONS', 403);
-//   }
-// };
+export class IncorrectPassword extends BaseContextualError {
+  constructor() {
+    super(`Specified password is incorrect`, 'INCORRECT_PASSWORD', 400);
+  }
+};

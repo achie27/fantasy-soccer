@@ -1,5 +1,6 @@
 import express from "express";
 
+import { InvalidAccessToken, InadequatePermissions } from '../lib/exceptions';
 import { userService, authService } from "../services";
 
 export const registerUser = async (
@@ -26,12 +27,8 @@ export const generateNewToken = async (
   try {
     const { email, password } = req.body;
 
-    const user = await userService.getUser({
-      email,
-    });
-
-    if (!(await userService.comparePassword(password, user?.auth?.password)))
-      return res.status(400).json({ error: "INCORRECT_PASSWORD" });
+    const user = await userService.getUser({ email });
+    await userService.assertPasswordCorrectness(user?.auth?.password, password);
 
     const accessToken = authService.generateAccessToken(user);
 
@@ -53,7 +50,7 @@ export const populateUserContext = async (
       req.context = { user: decoded };
       next();
     } else {
-      return res.status(403).end();
+      throw new InvalidAccessToken(accessToken);
     }
   } catch (e) {
     next(e);
@@ -72,7 +69,7 @@ export const verifyAuth = async (
       if (valid)
         next();
       else
-        return res.status(400).json({ error: "COULD_NOT_VERIFY_ACCESS_TOKEN" });
+        throw new InvalidAccessToken(accessToken);
     } else {
       return res.status(403).end();
     }
@@ -97,7 +94,8 @@ export const verifyRole = (allowedRoles: string[]) => {
       );
 
       if (hasAccess) return next();
-      return res.status(403).end();
+
+      throw new InadequatePermissions();
     } catch (e) {
       next(e);
     }
