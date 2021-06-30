@@ -1,11 +1,9 @@
 import express from "express";
 
 import {
-  InvalidAccessToken,
-  InadequatePermissions,
   PlayerNotFound,
 } from "../lib/exceptions";
-import { playerService, utilityService, authService } from "../services";
+import { playerService, utilityService } from "../services";
 
 export const createNewPlayer = async (
   req: express.Request,

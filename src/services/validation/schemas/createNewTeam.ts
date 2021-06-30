@@ -29,5 +29,5 @@ export default {
       },
     },
   },
-  minProperties: 1,
+  required: ['name', 'country']
 };

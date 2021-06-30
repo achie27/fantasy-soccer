@@ -78,6 +78,18 @@ export class IncorrectPassword extends BaseContextualError {
 
 export class PlayerNotFound extends BaseContextualError {
   constructor(playerId: string) {
-    super(`${playerId} is not registered`, "PLAYER_NOT_FOUND", 404);
+    super(`${playerId} doesn't exist`, "PLAYER_NOT_FOUND", 404);
+  }
+}
+
+export class TeamNotFound extends BaseContextualError {
+  constructor(teamId: string) {
+    super(`${teamId} doesn't exist`, "TEAM_NOT_FOUND", 404);
+  }
+}
+
+export class TransferNotFound extends BaseContextualError {
+  constructor(transferId: string) {
+    super(`${transferId} doesn't exist`, "TRANSFER_NOT_FOUND", 404);
   }
 }
