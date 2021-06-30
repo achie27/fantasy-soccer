@@ -32,7 +32,7 @@ playerRouter.put(
 );
 playerRouter.delete(
   "/:playerId",
-  authController.verifyRole(["ADMIN", "REGULAR"]),
+  authController.verifyRole(["ADMIN"]),
   playerController.deletePlayerById
 );
 

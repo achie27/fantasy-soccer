@@ -75,3 +75,9 @@ export class IncorrectPassword extends BaseContextualError {
     super(`Specified password is incorrect`, "INCORRECT_PASSWORD", 400);
   }
 }
+
+export class PlayerNotFound extends BaseContextualError {
+  constructor(playerId: string) {
+    super(`${playerId} is not registered`, "PLAYER_NOT_FOUND", 404);
+  }
+}

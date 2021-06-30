@@ -1,7 +1,6 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
-import bp from "body-parser";
 import mongoose from "mongoose";
 import morgan from "morgan";
 
@@ -21,8 +20,8 @@ const app = express();
 
 app.use(helmet());
 app.use(cors()); // TODO; add whitelist
-app.use(bp.urlencoded({ extended: false }));
-app.use(bp.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(morgan("dev"));
 
 app.use("/api/v1/auth", authRouter);
