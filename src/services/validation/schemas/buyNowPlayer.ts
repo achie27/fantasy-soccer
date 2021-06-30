@@ -9,7 +9,7 @@ export default {
         },
       },
       required: ["id"],
-    }
+    },
   },
-  required: ['team'],
+  required: ["team"],
 };

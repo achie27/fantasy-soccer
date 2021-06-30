@@ -21,7 +21,7 @@ export default {
         },
       },
       required: ["id"],
-    }
+    },
   },
-  required: ["player", "buyNowPrice", 'initiatorTeam'],
+  required: ["player", "buyNowPrice", "initiatorTeam"],
 };

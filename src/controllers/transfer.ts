@@ -13,7 +13,7 @@ export const createNewTransfer = async (
       player: { id: req.body.player.id },
       initiatorTeam: { id: req.body.initiatorTeam.id },
       buyNowPrice: req.body.buyNowPrice,
-      createdByUser: req.context.user.id
+      createdByUser: req.context.user.id,
     };
 
     const createdTransfer = await transferService.createTransfer(transfer);
@@ -36,15 +36,17 @@ export const buyPlayerNow = async (
      */
 
     const teamFetchParams: Record<string, any> = { id: req.body.team.id };
-    
+
     if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
       teamFetchParams.ownerId = req.context.user.id;
-    
+
     const toTeam = await teamService.fetchTeamById(teamFetchParams);
     if (!toTeam) throw new TeamNotFound(req.body.team.id);
-    
-    const transfer = await transferService.fetchTransferById(req.params.transferId);
-    const data = await transferService.settleTransfer(transfer, toTeam)
+
+    const transfer = await transferService.fetchTransferById(
+      req.params.transferId
+    );
+    const data = await transferService.settleTransfer(transfer, toTeam);
 
     return res.status(200).json({ data });
   } catch (e) {
@@ -58,13 +60,14 @@ export const fetchTransfers = async (
   next: express.NextFunction
 ) => {
   try {
-
     const params: Record<string, any> = {};
     if (req.query.id) params.id = req.query.id;
     if (req.query.playerId) params.playerId = req.query.playerId;
-    if (req.query.playerTeamName) params.playerTeamName = req.query.playerTeamName;
+    if (req.query.playerTeamName)
+      params.playerTeamName = req.query.playerTeamName;
     if (req.query.playerCountry) params.playerCountry = req.query.playerCountry;
-    if (req.query.playerTeamName) params.playerTeamName = req.query.playerTeamName;
+    if (req.query.playerTeamName)
+      params.playerTeamName = req.query.playerTeamName;
 
     if (req.query.playerValue)
       params.playerValue = utilityService.extractComparisonOperators(
@@ -107,7 +110,7 @@ export const updateTransferById = async (
 ) => {
   try {
     const params: Record<string, any> = { id: req.params.transferId };
-    const toUpdate: Record<string, any> = { };
+    const toUpdate: Record<string, any> = {};
 
     if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
       params.ownerId = req.context.user.id;
@@ -115,7 +118,10 @@ export const updateTransferById = async (
     if (req.body.player?.id) toUpdate.player = { id: req.body.player.id };
     if (req.body.buyNowPrice) toUpdate.buyNowPrice = req.body.buyNowPrice;
 
-    const updatedTransfer = await transferService.updateTransferById(params, toUpdate);
+    const updatedTransfer = await transferService.updateTransferById(
+      params,
+      toUpdate
+    );
 
     return res.status(200).json({ data: updatedTransfer });
   } catch (e) {
@@ -139,7 +145,6 @@ export const deleteTransferById = async (
 
     await transferService.deletetransfer(transfer);
     return res.status(200).json({});
-
   } catch (e) {
     next(e);
   }
