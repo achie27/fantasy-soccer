@@ -7,7 +7,13 @@
     "test": "TZ=utc mocha -r ts-node/register './test/*.spec.ts'",
     "build": "rm -rf ./dist/ rm -rf ./node_modules/ && npm ci && ./node_modules/typescript/bin/tsc -p tsconfig.json",
     "start": "node ./dist/index.js",
-    "start:dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node' src/index.ts"
+    "start:dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "format": "prettier --write \"./**/*.{ts,json}\"",
+    "lint:debug": "eslint .",
+    "lint:fix:debug": "eslint . --fix",
+    "lint": "eslint --quiet .",
+    "lint:fix": "eslint --quiet . --fix",
+    "codefix": "npm run format && npm run lint:fix"
   },
   "author": "achie27",
   "license": "ISC",
