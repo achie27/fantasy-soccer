@@ -1,8 +1,6 @@
 import express from "express";
 
-import {
-  PlayerNotFound,
-} from "../lib/exceptions";
+import { PlayerNotFound } from "../lib/exceptions";
 import { playerService, utilityService } from "../services";
 
 export const createNewPlayer = async (

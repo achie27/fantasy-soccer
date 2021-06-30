@@ -53,7 +53,6 @@ export const fetchTeams = async (
 
     const teams = await teamService.fetchTeams(params);
     return res.status(200).json({ data: teams });
-
   } catch (e) {
     next(e);
   }
@@ -86,7 +85,7 @@ export const updateTeamById = async (
 ) => {
   try {
     const params: Record<string, any> = { id: req.params.teamId };
-    const toUpdate: Record<string, any> = { };
+    const toUpdate: Record<string, any> = {};
 
     if (req.body.name) toUpdate.name = req.body.name;
     if (req.body.country) toUpdate.country = req.body.country;
@@ -100,7 +99,7 @@ export const updateTeamById = async (
     }
 
     const updatedTeam = await teamService.updateTeamById(params, toUpdate);
-    return res.status(200).json({data: updatedTeam});
+    return res.status(200).json({ data: updatedTeam });
   } catch (e) {
     next(e);
   }

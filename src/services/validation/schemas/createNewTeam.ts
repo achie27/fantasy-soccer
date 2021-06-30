@@ -29,5 +29,5 @@ export default {
       },
     },
   },
-  required: ['name', 'country']
+  required: ["name", "country"],
 };
