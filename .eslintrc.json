@@ -1,0 +1,29 @@
+{
+  "env": {
+    "es6": true
+  },
+  "extends": ["eslint:recommended", "airbnb-base", "prettier"],
+  "rules": {
+    "no-underscore-dangle": "off",
+    "no-console": "off",
+    "consistent-return": "off",
+    "max-len": "warn",
+    "global-require": "off",
+    "no-plusplus": "off",
+    "no-param-reassign": "warn",
+    "complexity": ["warn", 20],
+    "default-case": "off",
+    "comma-dangle": "off",
+    "operator-linebreak": "off",
+    "implicit-arrow-linebreak": "off",
+    "nonblock-statement-body-position": "off",
+    "curly": "off",
+    "indent": "off",
+    "brace-style": "off",
+    "no-restricted-syntax": "off",
+    "array-callback-return": "warn",
+    "prefer-rest-params": "warn",
+    "no-multi-assign": "warn",
+    "camelcase": "warn"
+  }
+}

@@ -1,7 +1,7 @@
-import express from "express";
-import { TeamNotFound } from "../lib/exceptions";
+import express from 'express';
+import { TeamNotFound } from '../lib/exceptions';
 
-import { teamService, utilityService } from "../services";
+import { teamService, utilityService } from '../services';
 
 export const createNewTeam = async (
   req: express.Request,
@@ -48,7 +48,7 @@ export const fetchTeams = async (
         req.query.budget as Record<string, any>
       );
 
-    if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
 
     const teams = await teamService.fetchTeams(params);
@@ -66,7 +66,7 @@ export const fetchTeamById = async (
   try {
     const params: Record<string, any> = { id: req.params.teamId };
 
-    if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
 
     const team = await teamService.fetchTeamById(params);
@@ -91,7 +91,7 @@ export const updateTeamById = async (
     if (req.body.country) toUpdate.country = req.body.country;
     if (req.body.players) toUpdate.players = req.body.players;
 
-    if (req.context.user.roles.map((r) => r.name).includes("ADMIN")) {
+    if (req.context.user.roles.map((r) => r.name).includes('ADMIN')) {
       if (req.body.owner?.id) toUpdate.owner = { id: req.body.owner.id };
       if (req.body.budget) toUpdate.budget = req.body.budget;
     } else {

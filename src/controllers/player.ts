@@ -1,7 +1,7 @@
-import express from "express";
+import express from 'express';
 
-import { PlayerNotFound } from "../lib/exceptions";
-import { playerService, utilityService } from "../services";
+import { PlayerNotFound } from '../lib/exceptions';
+import { playerService, utilityService } from '../services';
 
 export const createNewPlayer = async (
   req: express.Request,
@@ -50,7 +50,7 @@ export const fetchPlayers = async (
         req.query.age as Record<string, any>
       );
 
-    if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
 
     const players = await playerService.fetchPlayers(params);
@@ -68,7 +68,7 @@ export const fetchPlayerById = async (
   try {
     const params: Record<string, any> = { id: req.params.playerId };
 
-    if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
 
     const player = await playerService.fetchPlayerById(params);
@@ -94,7 +94,7 @@ export const updatePlayerById = async (
     if (req.body.firstName) toUpdate.firstName = req.body.firstName;
     if (req.body.lastName) toUpdate.lastName = req.body.lastName;
 
-    if (req.context.user.roles.map((r) => r.name).includes("ADMIN")) {
+    if (req.context.user.roles.map((r) => r.name).includes('ADMIN')) {
       if (req.body.value) toUpdate.value = req.body.value;
       if (req.body.birthDate) toUpdate.birthDate = req.body.birthDate;
       if (req.body.team?.id) toUpdate.team = { id: req.body.team.id };

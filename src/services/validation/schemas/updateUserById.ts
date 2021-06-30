@@ -1,27 +1,27 @@
 export default {
-  type: "object",
+  type: 'object',
   properties: {
     email: {
-      type: "string",
-      format: "email",
+      type: 'string',
+      format: 'email',
     },
     auth: {
-      type: "object",
+      type: 'object',
       properties: {
         password: {
-          type: "string",
+          type: 'string',
         },
       },
-      required: ["password"],
+      required: ['password'],
     },
     roles: {
-      type: "array",
+      type: 'array',
       items: {
-        type: "object",
+        type: 'object',
         properties: {
-          name: "string",
+          name: 'string',
         },
-        required: ["name"],
+        required: ['name'],
       },
     },
   },

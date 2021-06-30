@@ -1,17 +1,17 @@
 export default {
-  type: "object",
+  type: 'object',
   properties: {
     player: {
-      type: "object",
+      type: 'object',
       properties: {
         id: {
-          type: "string",
+          type: 'string',
         },
       },
-      required: ["id"],
+      required: ['id'],
     },
     buyNowPrice: {
-      type: "number",
+      type: 'number',
     },
   },
   minProperties: 1,

@@ -1,0 +1,5 @@
+test
+*.json
+.history
+coverage
+node_modules

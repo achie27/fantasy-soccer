@@ -1,11 +1,11 @@
-import express from "express";
+import express from 'express';
 
 import {
   InvalidAccessToken,
   InadequatePermissions,
   UserNotFound,
-} from "../lib/exceptions";
-import { userService, authService } from "../services";
+} from '../lib/exceptions';
+import { userService, authService } from '../services';
 
 export const registerUser = async (
   req: express.Request,
@@ -50,7 +50,7 @@ export const populateUserContext = async (
   next: express.NextFunction
 ) => {
   try {
-    const accessToken: string = req.header["access-token"];
+    const accessToken: string = req.header['access-token'];
     if (accessToken) {
       const decoded = authService.decodeAccessToken(accessToken);
       req.context = { user: decoded };
@@ -69,7 +69,7 @@ export const verifyAuth = async (
   next: express.NextFunction
 ) => {
   try {
-    const accessToken: string = req.header["access-token"];
+    const accessToken: string = req.header['access-token'];
     if (accessToken) {
       const valid = authService.verifyAccessToken(accessToken);
       if (valid) next();

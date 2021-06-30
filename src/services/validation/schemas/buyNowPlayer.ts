@@ -1,15 +1,15 @@
 export default {
-  type: "object",
+  type: 'object',
   properties: {
     team: {
-      type: "object",
+      type: 'object',
       properties: {
         id: {
-          type: "string",
+          type: 'string',
         },
       },
-      required: ["id"],
+      required: ['id'],
     },
   },
-  required: ["team"],
+  required: ['team'],
 };

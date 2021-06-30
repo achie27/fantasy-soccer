@@ -1,7 +1,7 @@
-import express from "express";
+import express from 'express';
 
-import { TeamNotFound, TransferNotFound } from "../lib/exceptions";
-import { teamService, transferService, utilityService } from "../services";
+import { TeamNotFound, TransferNotFound } from '../lib/exceptions';
+import { teamService, transferService, utilityService } from '../services';
 
 export const createNewTransfer = async (
   req: express.Request & { context: Record<string, any> },
@@ -37,7 +37,7 @@ export const buyPlayerNow = async (
 
     const teamFetchParams: Record<string, any> = { id: req.body.team.id };
 
-    if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       teamFetchParams.ownerId = req.context.user.id;
 
     const toTeam = await teamService.fetchTeamById(teamFetchParams);
@@ -112,7 +112,7 @@ export const updateTransferById = async (
     const params: Record<string, any> = { id: req.params.transferId };
     const toUpdate: Record<string, any> = {};
 
-    if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
 
     if (req.body.player?.id) toUpdate.player = { id: req.body.player.id };
@@ -137,7 +137,7 @@ export const deleteTransferById = async (
   try {
     const params: Record<string, any> = { id: req.params.transferId };
 
-    if (!req.context.user.roles.map((r) => r.name).includes("ADMIN"))
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
 
     const transfer = await transferService.fetchTransferById(params);

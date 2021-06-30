@@ -35,8 +35,8 @@ export const isContextualError = (error: any): error is BaseContextualError => {
 export class InternalServerError extends BaseContextualError {
   constructor() {
     super(
-      "Something went wrong. Please reach out to the developers",
-      "INTERNAL_SERVER_ERROR",
+      'Something went wrong. Please reach out to the developers',
+      'INTERNAL_SERVER_ERROR',
       500
     );
   }
@@ -44,19 +44,19 @@ export class InternalServerError extends BaseContextualError {
 
 export class InvalidInput extends BaseContextualError {
   constructor(invalidFields: string) {
-    super(invalidFields, "INVALID_INPUT_ERROR", 400);
+    super(invalidFields, 'INVALID_INPUT_ERROR', 400);
   }
 }
 
 export class UserNotFound extends BaseContextualError {
   constructor(userId: string) {
-    super(`${userId} is not registered`, "USER_NOT_FOUND", 404);
+    super(`${userId} is not registered`, 'USER_NOT_FOUND', 404);
   }
 }
 
 export class InvalidAccessToken extends BaseContextualError {
   constructor(token: string) {
-    super(`'${token}' is invalid`, "INVALID_ACCESS_TOKEN", 400);
+    super(`'${token}' is invalid`, 'INVALID_ACCESS_TOKEN', 400);
   }
 }
 
@@ -64,7 +64,7 @@ export class InadequatePermissions extends BaseContextualError {
   constructor() {
     super(
       `You don't have the necessary permissions for this`,
-      "INADEQUATE_PERMISSIONS",
+      'INADEQUATE_PERMISSIONS',
       403
     );
   }
@@ -72,24 +72,24 @@ export class InadequatePermissions extends BaseContextualError {
 
 export class IncorrectPassword extends BaseContextualError {
   constructor() {
-    super(`Specified password is incorrect`, "INCORRECT_PASSWORD", 400);
+    super(`Specified password is incorrect`, 'INCORRECT_PASSWORD', 400);
   }
 }
 
 export class PlayerNotFound extends BaseContextualError {
   constructor(playerId: string) {
-    super(`${playerId} doesn't exist`, "PLAYER_NOT_FOUND", 404);
+    super(`${playerId} doesn't exist`, 'PLAYER_NOT_FOUND', 404);
   }
 }
 
 export class TeamNotFound extends BaseContextualError {
   constructor(teamId: string) {
-    super(`${teamId} doesn't exist`, "TEAM_NOT_FOUND", 404);
+    super(`${teamId} doesn't exist`, 'TEAM_NOT_FOUND', 404);
   }
 }
 
 export class TransferNotFound extends BaseContextualError {
   constructor(transferId: string) {
-    super(`${transferId} doesn't exist`, "TRANSFER_NOT_FOUND", 404);
+    super(`${transferId} doesn't exist`, 'TRANSFER_NOT_FOUND', 404);
   }
 }

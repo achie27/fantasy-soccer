@@ -1,48 +1,48 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   transferController,
   authController,
   validationController,
-} from "../controllers";
+} from '../controllers';
 
 const transferRouter = Router();
 transferRouter.use(authController.populateUserContext);
 
 transferRouter.post(
-  "/",
-  authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("createNewTransfer"),
+  '/',
+  authController.verifyRole(['ADMIN', 'REGULAR']),
+  validationController.validateRequestBody('createNewTransfer'),
   transferController.createNewTransfer
 );
 transferRouter.post(
-  "/:transferId/buyPlayerNow",
-  authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("buyPlayerNow"),
+  '/:transferId/buyPlayerNow',
+  authController.verifyRole(['ADMIN', 'REGULAR']),
+  validationController.validateRequestBody('buyPlayerNow'),
   transferController.buyPlayerNow
 );
 transferRouter.get(
-  "/",
-  authController.verifyRole(["ADMIN", "REGULAR"]),
+  '/',
+  authController.verifyRole(['ADMIN', 'REGULAR']),
   transferController.fetchTransfers
 );
 transferRouter.get(
-  "/:transferId",
-  authController.verifyRole(["ADMIN", "REGULAR"]),
+  '/:transferId',
+  authController.verifyRole(['ADMIN', 'REGULAR']),
   transferController.fetchTransferById
 );
 transferRouter.put(
-  "/:transferId",
-  authController.verifyRole(["ADMIN", "REGULAR"]),
-  validationController.validateRequestBody("updateTransferById"),
+  '/:transferId',
+  authController.verifyRole(['ADMIN', 'REGULAR']),
+  validationController.validateRequestBody('updateTransferById'),
   transferController.updateTransferById
 );
 transferRouter.delete(
-  "/:transferId",
-  authController.verifyRole(["ADMIN", "REGULAR"]),
+  '/:transferId',
+  authController.verifyRole(['ADMIN', 'REGULAR']),
   transferController.deleteTransferById
 );
 
-transferRouter.use("*", (_, res) => {
+transferRouter.use('*', (_, res) => {
   return res.status(405).end();
 });
 
