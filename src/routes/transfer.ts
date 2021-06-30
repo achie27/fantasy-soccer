@@ -17,6 +17,7 @@ transferRouter.post(
 transferRouter.post(
   "/:transferId/buyPlayerNow",
   authController.verifyRole(["ADMIN", "REGULAR"]),
+  validationController.validateRequestBody("buyPlayerNow"),
   transferController.buyPlayerNow
 );
 transferRouter.get(

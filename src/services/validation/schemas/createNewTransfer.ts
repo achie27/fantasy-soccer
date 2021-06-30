@@ -13,6 +13,15 @@ export default {
     buyNowPrice: {
       type: "number",
     },
+    initiatorTeam: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+        },
+      },
+      required: ["id"],
+    }
   },
-  required: ["playerId", "buyNowPrice"],
+  required: ["player", "buyNowPrice", 'initiatorTeam'],
 };
