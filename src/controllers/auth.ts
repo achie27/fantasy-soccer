@@ -1,6 +1,10 @@
 import express from "express";
 
-import { InvalidAccessToken, InadequatePermissions, UserNotFound } from "../lib/exceptions";
+import {
+  InvalidAccessToken,
+  InadequatePermissions,
+  UserNotFound,
+} from "../lib/exceptions";
 import { userService, authService } from "../services";
 
 export const registerUser = async (
@@ -29,7 +33,7 @@ export const generateNewToken = async (
 
     const user = await userService.getUser({ email });
     if (!user) throw new UserNotFound(email);
-    
+
     await userService.assertPasswordCorrectness(user?.auth?.password, password);
 
     const accessToken = authService.generateAccessToken(user);

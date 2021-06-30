@@ -13,5 +13,5 @@ export {
   playerService,
   transferService,
   validationService,
-  utilityService
+  utilityService,
 };
