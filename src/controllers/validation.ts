@@ -3,7 +3,7 @@ import express from 'express';
 import { validationService } from '../services';
 
 export const validateRequestBody = (
-  schemaType: string
+  schemaType: validationService.SchemaTypes
 ): express.RequestHandler => {
   const validator: express.RequestHandler = async (
     req: express.Request,
