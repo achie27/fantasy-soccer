@@ -55,8 +55,8 @@ export class UserNotFound extends BaseContextualError {
 }
 
 export class InvalidAccessToken extends BaseContextualError {
-  constructor(token: string) {
-    super(`'${token}' is invalid`, 'INVALID_ACCESS_TOKEN', 400);
+  constructor(reason: string) {
+    super(reason, 'INVALID_ACCESS_TOKEN', 400);
   }
 }
 
