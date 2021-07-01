@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { validationService, utilityService } from '../services';
+import { validationService } from '../services';
 
 export const validateRequestBody = (
   schemaType: string
@@ -11,16 +11,10 @@ export const validateRequestBody = (
     next: express.NextFunction
   ) => {
     try {
-      const { err } = await validationService.validate(schemaType, req.body);
-      if (err) {
-        console.error(err);
-        return res.status(400).json({ error: 'INCORRECT_REQUEST_BODY' });
-      }
-
+      await validationService.validate(schemaType, req.body);
       next();
     } catch (e) {
-      console.error(e);
-      return res.status(500).json({ error: 'INTERNAL_SERVER_ERROR' });
+      next(e);
     }
   };
 
