@@ -3,9 +3,4 @@ import * as teamModel from './team';
 import * as playerModel from './player';
 import * as transferModel from './transfer';
 
-export {
-  userModel,
-  teamModel,
-  playerModel,
-  transferModel,
-};
+export { userModel, teamModel, playerModel, transferModel };

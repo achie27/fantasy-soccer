@@ -3,7 +3,7 @@ import { playerModel, teamModel } from '../models';
 
 export const createPlayer = async (player) => {
   const newPlayer: Record<string, any> = await playerModel.insert(player);
-  if(player.team?.id) {
+  if (player.team?.id) {
     await teamModel.addPlayerToTeam(player.team.id, newPlayer);
   }
 
@@ -24,10 +24,8 @@ export const fetchPlayers = async (params) => {
   }
 
   if (modelParams.ownerId) {
-    if (modelParams.team)
-      modelParams.team.ownerId = modelParams.ownerId;
-    else
-      modelParams.team = { ownerId: modelParams.ownerId };
+    if (modelParams.team) modelParams.team.ownerId = modelParams.ownerId;
+    else modelParams.team = { ownerId: modelParams.ownerId };
 
     delete modelParams.ownerId;
   }
@@ -52,14 +50,14 @@ export const updatePlayer = async (params, updatedFields) => {
   }
 
   if (updatedFields.team?.id || updatedFields.value) {
-    const [ player ] = await playerModel.fetchPlayers({ id: modelParams.id });
-    const [ oldTeam ] = await teamModel.fetchTeams({ id: player.team.id });
+    const [player] = await playerModel.fetchPlayers({ id: modelParams.id });
+    const [oldTeam] = await teamModel.fetchTeams({ id: player.team.id });
 
-    const [ newTeam ] = await teamModel.fetchTeams({ id: updatedFields.team.id });
+    const [newTeam] = await teamModel.fetchTeams({ id: updatedFields.team.id });
 
     oldTeam.value -= updatedFields.value || player.value;
-    oldTeam.players = oldTeam.players.filter(p => p.id !== player.id);
-    
+    oldTeam.players = oldTeam.players.filter((p) => p.id !== player.id);
+
     newTeam.value += updatedFields.value || player.value;
     newTeam.players.push({ id: player.id });
 
@@ -67,23 +65,22 @@ export const updatePlayer = async (params, updatedFields) => {
 
     await Promise.all([
       await teamModel.updateTeam({ id: oldTeam.id }, oldTeam),
-      await teamModel.updateTeam({ id: newTeam.id }, newTeam)
+      await teamModel.updateTeam({ id: newTeam.id }, newTeam),
     ]);
   }
 
-  const updated = await playerModel.updatePlayer(modelParams, updatedFields)
+  const updated = await playerModel.updatePlayer(modelParams, updatedFields);
   if (!updated) throw new PlayerNotFound(modelParams.id);
 
   return updated;
 };
 
 export const deletePlayer = async (player) => {
-  const [ team ] = await teamModel.fetchTeams({ id: player.team.id });
+  const [team] = await teamModel.fetchTeams({ id: player.team.id });
 
   team.value -= player.value;
-  team.players = team.players.filter(p => p.id !== player.id);
-  
-  await teamModel.updateTeam({ id: team.id }, team);
-  await playerModel.deletePlayer({ id:  player.id });
-};
+  team.players = team.players.filter((p) => p.id !== player.id);
 
+  await teamModel.updateTeam({ id: team.id }, team);
+  await playerModel.deletePlayer({ id: player.id });
+};
