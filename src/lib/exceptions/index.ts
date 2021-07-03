@@ -113,3 +113,43 @@ export class MaxTeamsLimitReached extends BaseContextualError {
     );
   }
 }
+
+export class InadequateBudget extends BaseContextualError {
+  constructor(teamId: string) {
+    super(
+      `Team ${teamId} does not have enough funds`,
+      'INADEQUATE_BUDGET',
+      400
+    );
+  }
+}
+
+export class PlayerInDifferentTeam extends BaseContextualError {
+  constructor(playerId: string) {
+    super(
+      `Player ${playerId} belongs to a different team`,
+      'PLAYER_IN_DIFFERENT_TEAM',
+      400
+    );
+  }
+}
+
+export class TransferNotOpen extends BaseContextualError {
+  constructor(transferId: string) {
+    super(
+      `Transfer ${transferId} is not open`,
+      'TRANSFER_NOT_OPEN',
+      400
+    );
+  }
+}
+
+export class TransferAlreadySettled extends BaseContextualError {
+  constructor(transferId: string) {
+    super(
+      `Transfer ${transferId} is settled`,
+      'TRANSFER_ALREADY_SETTLED',
+      400
+    );
+  }
+}

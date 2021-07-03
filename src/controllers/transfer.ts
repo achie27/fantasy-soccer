@@ -30,6 +30,7 @@ export const buyPlayerNow = async (
 ) => {
   try {
     /**
+     * 0. Check if the new team has enough budget
      * 1. Remove from og team, update the team's value, update the team's budget
      * 2. Add to the new team, update the team's value, update the team's budget
      * 3. Update the player's value and team
@@ -41,14 +42,16 @@ export const buyPlayerNow = async (
       teamFetchParams.ownerId = req.context.user.id;
 
     const toTeam = await teamService.fetchTeamById(teamFetchParams);
+    // should be inadeuate permissions actually
     if (!toTeam) throw new TeamNotFound(req.body.team.id);
 
     const transfer = await transferService.fetchTransferById(
       req.params.transferId
     );
-    const data = await transferService.settleTransfer(transfer, toTeam);
+    
+    await transferService.settleTransfer(transfer, toTeam);
 
-    return res.status(200).json({ data });
+    return res.status(200).json({});
   } catch (e) {
     next(e);
   }
@@ -66,8 +69,6 @@ export const fetchTransfers = async (
     if (req.query.playerTeamName)
       params.playerTeamName = req.query.playerTeamName;
     if (req.query.playerCountry) params.playerCountry = req.query.playerCountry;
-    if (req.query.playerTeamName)
-      params.playerTeamName = req.query.playerTeamName;
 
     if (req.query.playerValue)
       params.playerValue = utilityService.extractComparisonOperators(
@@ -113,7 +114,7 @@ export const updateTransferById = async (
     const toUpdate: Record<string, any> = {};
 
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
-      params.ownerId = req.context.user.id;
+      params.createdByUser = req.context.user.id;
 
     if (req.body.player?.id) toUpdate.player = { id: req.body.player.id };
     if (req.body.buyNowPrice) toUpdate.buyNowPrice = req.body.buyNowPrice;
@@ -138,12 +139,12 @@ export const deleteTransferById = async (
     const params: Record<string, any> = { id: req.params.transferId };
 
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
-      params.ownerId = req.context.user.id;
+      params.createdByUser = req.context.user.id;
 
     const transfer = await transferService.fetchTransferById(params);
     if (!transfer) throw new TransferNotFound(req.params.transferId);
 
-    await transferService.deletetransfer(transfer);
+    await transferService.deleteTransfer(transfer);
     return res.status(200).json({});
   } catch (e) {
     next(e);
