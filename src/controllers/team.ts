@@ -14,13 +14,13 @@ export const createNewTeam = async (
       country: req.body.country,
     };
 
-    if (req.body?.players) team.players = req.body.players.map(p => ({ id: p.id }));
+    if (req.body?.players)
+      team.players = req.body.players.map((p) => ({ id: p.id }));
 
     if (req.body?.owner?.id) {
       if (req.context.user.roles.map((r) => r.name).includes('ADMIN'))
         team.owner = { id: req.body.owner.id };
-      else 
-        team.owner = { id: req.context.user.id };
+      else team.owner = { id: req.context.user.id };
     }
 
     const createdteam = await teamService.createTeam(team);
@@ -94,7 +94,8 @@ export const updateTeamById = async (
 
     if (req.body.name) toUpdate.name = req.body.name;
     if (req.body.country) toUpdate.country = req.body.country;
-    if (req.body.players) toUpdate.players = req.body.players.map(p => ({ id: p.id }));
+    if (req.body.players)
+      toUpdate.players = req.body.players.map((p) => ({ id: p.id }));
 
     if (req.context.user.roles.map((r) => r.name).includes('ADMIN')) {
       if (req.body.owner?.id) toUpdate.owner = { id: req.body.owner.id };

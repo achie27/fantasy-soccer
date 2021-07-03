@@ -30,7 +30,7 @@ export const extractComparisonOperators = (
 export const getRandInt = (l: number, r: number) => {
   l = Math.ceil(l);
   r = Math.floor(r);
-  return Math.floor(Math.random() * (r - l + 1) + l); 
+  return Math.floor(Math.random() * (r - l + 1) + l);
 };
 
 export const generateRandomName = (type: 'first' | 'last' | 'full') => {

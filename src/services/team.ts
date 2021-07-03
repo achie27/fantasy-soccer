@@ -1,4 +1,8 @@
-import { PlayerNotFound, PlayerAlreadyContracted, MaxTeamsLimitReached } from '../lib/exceptions';
+import {
+  PlayerNotFound,
+  PlayerAlreadyContracted,
+  MaxTeamsLimitReached,
+} from '../lib/exceptions';
 import { maxTeamsLimit } from '../constants';
 
 import { playerService } from '../services';
@@ -8,20 +12,22 @@ export const createTeam = async (params) => {
   const team = { ...params };
 
   if (team.players?.length) {
-    const players = await playerModel.fetchPlayersInBulk(team.players.map(p => p.id));
+    const players = await playerModel.fetchPlayersInBulk(
+      team.players.map((p) => p.id)
+    );
     team.value = players.reduce((acc, curPlayer) => acc + curPlayer.value, 0);
   } else {
     const players = await playerService.getUncappedPlayers({
       type: {
-        'goalkeeper': 3,
-        'defender': 6,
-        'midfielder': 6,
-        'attacker': 5,
-      }
+        goalkeeper: 3,
+        defender: 6,
+        midfielder: 6,
+        attacker: 5,
+      },
     });
 
     team.value = players.reduce((acc, curPlayer) => acc + curPlayer.value, 0);
-    team.players = players.map(p => ({ id: p.id }));
+    team.players = players.map((p) => ({ id: p.id }));
   }
 
   team.budget = 5000000;
@@ -29,16 +35,16 @@ export const createTeam = async (params) => {
   const newTeam: Record<string, any> = await teamModel.insert(team);
 
   await Promise.all(
-    team.players.map(
-      p => playerModel.updatePlayer(
-        { id: p.id }, { team: { id: newTeam.id, ownerId: newTeam.owner.id } }
+    team.players.map((p) =>
+      playerModel.updatePlayer(
+        { id: p.id },
+        { team: { id: newTeam.id, ownerId: newTeam.owner.id } }
       )
     )
   );
 
   return newTeam;
 };
-
 
 export const fetchTeams = async (params) => {
   const modelParams = { ...params };
@@ -77,25 +83,28 @@ export const updateTeamById = async (params, updatedFields) => {
 
   // should either be uncapped or in the same team
   if (updatedFields.players) {
-    const newPlayers = await playerModel.fetchPlayers(updatedFields.players.map(p => p.id));
+    const newPlayers = await playerModel.fetchPlayers(
+      updatedFields.players.map((p) => p.id)
+    );
 
     for (const p of newPlayers) {
       if (p.team?.id !== team.id) {
         throw new PlayerAlreadyContracted(p.id);
       } else {
-      // either uncapped or already in this team
-        
+        // either uncapped or already in this team
       }
     }
 
     const oldPlayersToRemove = [];
-    team.players.forEach(p => {
-      if (newPlayers.findIndex(p2 => p2.id === p.id) === -1)
+    team.players.forEach((p) => {
+      if (newPlayers.findIndex((p2) => p2.id === p.id) === -1)
         oldPlayersToRemove.push(p);
     });
 
     await Promise.all(
-      oldPlayersToRemove.map((p) => teamModel.removePlayerFromTeam(team.id, p.id))
+      oldPlayersToRemove.map((p) =>
+        teamModel.removePlayerFromTeam(team.id, p.id)
+      )
     );
   }
 
@@ -103,17 +112,19 @@ export const updateTeamById = async (params, updatedFields) => {
     // const user = await userModel.fetchUserById(updatedFields.owner.id);
     // if (user.teams?.length >= maxTeamsLimit) {
     //   throw new MaxTeamsLimitReached(user.id);
-    // } 
-    
+    // }
+
     // await userModel.updateUserById(user.id, { teams: user.teams.concat([modelParams.id]) });
     await Promise.all([
       userModel.removeTeamFromUserById(team.owner.id, team.id),
       userModel.addTeamToUserById(updatedFields.owner.id, team.id),
       Promise.all(
         team.players.map(async (p) => {
-          await playerModel.updatePlayerById(p.id, { team: { id: team.id, ownerId: updatedFields.owner.id } })
+          await playerModel.updatePlayerById(p.id, {
+            team: { id: team.id, ownerId: updatedFields.owner.id },
+          });
         })
-      )
+      ),
     ]);
   }
 
@@ -129,8 +140,8 @@ export const deleteTeam = async (team) => {
     userModel.removeTeamFromUserById(team.owner.id, team.id),
     Promise.all(
       team.players.map(async (p) => {
-        await playerModel.updatePlayerById(p.id, { team: null })
+        await playerModel.updatePlayerById(p.id, { team: null });
       })
-    )
+    ),
   ]);
 };

@@ -4,12 +4,17 @@ import { playerModel, teamModel } from '../models';
 
 const generateDOB = () => {
   const birthDate = new Date();
-  birthDate.setFullYear(utilityService.getRandInt(birthDate.getFullYear() - 40, birthDate.getFullYear() - 18));
+  birthDate.setFullYear(
+    utilityService.getRandInt(
+      birthDate.getFullYear() - 40,
+      birthDate.getFullYear() - 18
+    )
+  );
   return birthDate;
 };
 
 export const createPlayer = async (params) => {
-  const player = {...params, value: 1000000 };
+  const player = { ...params, value: 1000000 };
 
   if (!params.birthDate) {
     player.birthDate = generateDOB();
@@ -105,15 +110,14 @@ export const deletePlayer = async (player) => {
   // team.value -= player.value;
   // team.players = team.players.filter((p) => p.id !== player.id);
 
-
   await playerModel.deletePlayer({ id: player.id });
 };
 
 export const getUncappedPlayers = async (params) => {
   const uncappedPlayers = [];
-  
+
   await Promise.all(
-    Object.keys(params.type).map(async type => {
+    Object.keys(params.type).map(async (type) => {
       const players = await teamModel.fetchPlayers({ type, team: null });
 
       while (players.length < params.type[type]) {
@@ -123,14 +127,14 @@ export const getUncappedPlayers = async (params) => {
           type,
           country: utilityService.getRandomCountry(),
           birthDate: generateDOB(),
-          value: 1000000
+          value: 1000000,
         };
-  
+
         players.push(newPlayer);
       }
 
       uncappedPlayers.push(...players);
-    })  
+    })
   );
 
   return uncappedPlayers;
