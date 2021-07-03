@@ -1,11 +1,11 @@
-import v4 from 'uuid'; 
+import v4 from 'uuid';
 
 import { IncorrectPassword, UserNotFound } from '../lib/exceptions';
 import { utilityService, teamService } from '.';
 import { teamModel, userModel, transferModel } from '../models';
 
 export const assertPasswordCorrectness = async (text, hashedUserPassword) => {
-  if (!await utilityService.compareWithHash(text, hashedUserPassword))
+  if (!(await utilityService.compareWithHash(text, hashedUserPassword)))
     throw new IncorrectPassword();
 };
 
@@ -18,15 +18,15 @@ export const createUser = async (params) => {
     name: `${newUser.id}'s Team`,
     country: utilityService.getRandomCountry(),
     owner: {
-      id: newUser.id
-    }
-  })
+      id: newUser.id,
+    },
+  });
 
   return { ...newUser, teams: [{ id: newTeam.id }] };
 };
 
 export const fetchUsers = async (params) => {
-  const modelParams = {...params};
+  const modelParams = { ...params };
   if (modelParams.role) {
     modelParams.roles = { name: modelParams.role };
     delete modelParams.role;
@@ -36,7 +36,7 @@ export const fetchUsers = async (params) => {
 };
 
 export const getUser = async ({ id, email }) => {
-  const params = { };
+  const params = {};
   if (id) params.id = id;
   if (email) params.email = email;
 
@@ -53,15 +53,17 @@ export const updateUserById = async (id, toUpdate) => {
 };
 
 export const deleteUserById = async (id) => {
-  const user = await userModel.getUser({ id });    
+  const user = await userModel.getUser({ id });
   if (!user) throw new UserNotFound(id);
 
   await Promise.all([
     transferModel.deleteTransfersOfUserById(id),
     Promise.all(
-      user.teams.map(async t => await teamService.deleteTeam({ id: t.id, owner: { id: user.id } }))
+      user.teams.map(
+        async (t) =>
+          await teamService.deleteTeam({ id: t.id, owner: { id: user.id } })
+      )
     ),
-    userModel.deleteUser(id)
+    userModel.deleteUser(id),
   ]);
 };
-

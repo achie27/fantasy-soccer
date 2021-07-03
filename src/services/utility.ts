@@ -48,7 +48,6 @@ export const getRandomCountry = () => {
   return countries[getRandInt(0, countries.length)].name;
 };
 
-
 export const hash = async (text: string): Promise<string> => {
   return await bcrypt.hash(text, 10);
 };

@@ -33,7 +33,7 @@ export const createTeam = async (params) => {
   team.budget = 5000000;
 
   const newTeam: Record<string, any> = await teamModel.insert(team);
-  
+
   // should be idempotent
   await userModel.addTeamToUserById(team.owner.id, team.id);
   await Promise.all(
@@ -145,6 +145,6 @@ export const deleteTeam = async (team) => {
         await playerModel.updatePlayerById(p.id, { team: null });
       })
     ),
-    teamModel.deleteTeam(team.id)
+    teamModel.deleteTeam(team.id),
   ]);
 };

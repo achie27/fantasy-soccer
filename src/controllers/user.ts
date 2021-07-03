@@ -105,9 +105,7 @@ export const deleteUserById = async (
      * 2. Delete all transfer requests
      * 3. Delete team
      */
-    const deletedUser = await userService.deleteUserById(
-      req.params.userId,
-    );
+    const deletedUser = await userService.deleteUserById(req.params.userId);
     return res.status(200).json({ data: deletedUser });
   } catch (e) {
     next(e);
