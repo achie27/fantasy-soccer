@@ -151,4 +151,4 @@ export const deleteTeam = async (team) => {
 
 export const incrementTeamBudgetById = async (id, inc) => {
   await teamModel.incrementTeamBudgetById(id, inc);
-}
+};

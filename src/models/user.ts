@@ -1,7 +1,11 @@
 import { Schema, Model, model, Document, Types, LeanDocument } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 
-import { InternalServerError, IncorrectPassword, UserNotFound } from '../lib/exceptions';
+import {
+  InternalServerError,
+  IncorrectPassword,
+  UserNotFound,
+} from '../lib/exceptions';
 import logger from '../lib/logger';
 import { utilityService } from '../services';
 
@@ -14,7 +18,7 @@ export interface IUser {
     password: string;
   };
   roles: Array<{ name: typeof userRoles[number] }>;
-  teams: Array<{ id: string }>
+  teams: Array<{ id: string }>;
 }
 
 const userSchema = new Schema<IUser>({
@@ -43,7 +47,10 @@ export interface IUserDocument extends IUser, Document {
 
 const User: Model<IUserDocument> = model('User', userSchema, 'users');
 
-type SanitisedUser = Pick<LeanDocument<IUserDocument>, 'id' | 'email' | 'roles' | 'teams'>;
+type SanitisedUser = Pick<
+  LeanDocument<IUserDocument>,
+  'id' | 'email' | 'roles' | 'teams'
+>;
 
 const sanitiseDoc = (user: IUserDocument): SanitisedUser => {
   const toReturn = user.toJSON();
@@ -54,14 +61,12 @@ const sanitiseDoc = (user: IUserDocument): SanitisedUser => {
   return toReturn;
 };
 
-export const insert = async (
-  userDetails: {
-    email: IUser['email'],
-    auth: IUser['auth'],
-    roles?: IUser['roles'],
-    teams?: IUser['teams']
-  }
-): Promise<SanitisedUser> => {
+export const insert = async (userDetails: {
+  email: IUser['email'];
+  auth: IUser['auth'];
+  roles?: IUser['roles'];
+  teams?: IUser['teams'];
+}): Promise<SanitisedUser> => {
   try {
     const user: IUserDocument = new User({ ...userDetails, id: uuid() });
     user.auth.password = await utilityService.hash(user.auth.password);
@@ -92,7 +97,7 @@ export const updateUserById = async (
   toUpdate: utilityService.AtLeastOne<Omit<IUser, 'id'>>
 ): Promise<void> => {
   try {
-    const res = await User.updateOne({ id }, {$set: toUpdate});
+    const res = await User.updateOne({ id }, { $set: toUpdate });
     if (res.n === 0) throw new UserNotFound(id);
   } catch (e) {
     logger.error(e);
@@ -104,7 +109,7 @@ export const fetchUsers = async (
   userDetails: utilityService.AtLeastOne<{
     id: IUser['id'];
     email: IUser['email'];
-    roles: IUser['roles']
+    roles: IUser['roles'];
   }>
 ): Promise<SanitisedUser[]> => {
   try {
@@ -115,9 +120,7 @@ export const fetchUsers = async (
   }
 };
 
-export const deleteUser = async (
-  id: IUser['id']
-): Promise<void> => {
+export const deleteUser = async (id: IUser['id']): Promise<void> => {
   try {
     await User.deleteOne({ id });
   } catch (e) {
@@ -128,7 +131,7 @@ export const deleteUser = async (
 
 export const addTeamToUserById = async (
   id: IUser['id'],
-  teamId: string,
+  teamId: string
 ): Promise<void> => {
   try {
     await User.updateOne({ id }, { $addToSet: { teams: { id: teamId } } });
@@ -140,7 +143,7 @@ export const addTeamToUserById = async (
 
 export const removeTeamFromUserById = async (
   id: IUser['id'],
-  teamId: string,
+  teamId: string
 ): Promise<void> => {
   try {
     await User.updateOne({ id }, { $pull: { teams: { id: teamId } } });
@@ -152,7 +155,7 @@ export const removeTeamFromUserById = async (
 
 export const checkUserPassword = async (
   id: IUser['id'],
-  password: string,
+  password: string
 ): Promise<void> => {
   try {
     const user = await User.findOne({ id }, { 'auth.password': 1, _id: 0 });

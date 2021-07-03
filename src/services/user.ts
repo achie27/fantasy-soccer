@@ -9,9 +9,9 @@ export const checkUserPassword = async (id, text) => {
 };
 
 export const createUser = async (params: {
-  email: userModel.IUser['email'],
-  auth: userModel.IUser['auth'],
-  roles?: userModel.IUser['roles']
+  email: userModel.IUser['email'];
+  auth: userModel.IUser['auth'];
+  roles?: userModel.IUser['roles'];
 }) => {
   const newUser = await userModel.insert(params);
   const newTeam = await teamService.createTeam({
@@ -35,7 +35,9 @@ export const fetchUsers = async (params) => {
   return await userModel.fetchUsers(modelParams);
 };
 
-export const getUser = async (params: utilityService.AtLeastOne<{ id, email }>) => {
+export const getUser = async (
+  params: utilityService.AtLeastOne<{ id; email }>
+) => {
   return await userModel.getUser(params);
 };
 
