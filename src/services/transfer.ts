@@ -2,7 +2,7 @@ import {
   PlayerInDifferentTeam,
   InadequateBudget,
   InadequatePermissions,
-  TransferNotOpen
+  TransferNotOpen,
 } from '../lib/exceptions';
 
 import { playerService, teamService, utilityService } from '../services';
@@ -10,7 +10,7 @@ import { teamModel, transferModel } from '../models';
 
 export const createTransfer = async (params) => {
   const transfer = { ...params };
-  
+
   transfer.status = 'OPEN';
   transfer.openedDate = new Date();
 
@@ -26,17 +26,29 @@ export const settleTransfer = async (transfer, toTeam) => {
     throw new InadequateBudget(toTeam.id);
   }
 
-  const player = await playerService.fetchPlayerById({ id: transfer.player.id });
-  
+  const player = await playerService.fetchPlayerById({
+    id: transfer.player.id,
+  });
+
   await Promise.all([
-    playerService.updatePlayer({ id: transfer.player.id }, { team: { id: toTeam.id }, value: (player.value * (100 + utilityService.getRandInt(10, 100))) / 100 }),
-    teamService.incrementTeamBudgetById(transfer.initiatorTeam.id, transfer.buyNowPrice),
-    teamService.incrementTeamBudgetById(toTeam.id, -transfer.buyNowPrice)
+    playerService.updatePlayer(
+      { id: transfer.player.id },
+      {
+        team: { id: toTeam.id },
+        value:
+          (player.value * (100 + utilityService.getRandInt(10, 100))) / 100,
+      }
+    ),
+    teamService.incrementTeamBudgetById(
+      transfer.initiatorTeam.id,
+      transfer.buyNowPrice
+    ),
+    teamService.incrementTeamBudgetById(toTeam.id, -transfer.buyNowPrice),
   ]);
 };
 
 export const fetchTransfers = async (params) => {
-  const modelParams = {...params, player: {}, initiatorTeam: {}};
+  const modelParams = { ...params, player: {}, initiatorTeam: {} };
 
   if (modelParams.playerId) {
     modelParams.player.id = modelParams.playerId;
@@ -58,13 +70,12 @@ export const fetchTransfers = async (params) => {
     delete modelParams.playerTeamName;
   }
 
-  if (Object.keys(modelParams.player).length === 0)
-    delete modelParams.player;
+  if (Object.keys(modelParams.player).length === 0) delete modelParams.player;
 
   if (Object.keys(modelParams.initiatorTeam).length === 0)
     delete modelParams.initiatorTeam;
 
-  return await transferModel.fetchTransfers(modelParams); 
+  return await transferModel.fetchTransfers(modelParams);
 };
 
 export const updateTransferById = async (params, updatedFields) => {
@@ -73,8 +84,10 @@ export const updateTransferById = async (params, updatedFields) => {
   if (transfer.status !== 'OPEN') throw new TransferNotOpen(transfer.id);
 
   if (updatedFields.player?.id) {
-    const player = await playerService.fetchPlayerById({ id: updatedFields.player.id });
-    
+    const player = await playerService.fetchPlayerById({
+      id: updatedFields.player.id,
+    });
+
     if (player.team.id !== transfer.initiatorTeam.id)
       throw new PlayerInDifferentTeam(player.id);
   }
@@ -87,4 +100,3 @@ export const deleteTransfer = async (transfer) => {
 
   await transferModel.deleteTransferById(transfer.id);
 };
-

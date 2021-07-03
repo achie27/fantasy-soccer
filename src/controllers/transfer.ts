@@ -48,7 +48,7 @@ export const buyPlayerNow = async (
     const transfer = await transferService.fetchTransferById(
       req.params.transferId
     );
-    
+
     await transferService.settleTransfer(transfer, toTeam);
 
     return res.status(200).json({});

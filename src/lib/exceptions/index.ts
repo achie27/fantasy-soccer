@@ -136,20 +136,12 @@ export class PlayerInDifferentTeam extends BaseContextualError {
 
 export class TransferNotOpen extends BaseContextualError {
   constructor(transferId: string) {
-    super(
-      `Transfer ${transferId} is not open`,
-      'TRANSFER_NOT_OPEN',
-      400
-    );
+    super(`Transfer ${transferId} is not open`, 'TRANSFER_NOT_OPEN', 400);
   }
 }
 
 export class TransferAlreadySettled extends BaseContextualError {
   constructor(transferId: string) {
-    super(
-      `Transfer ${transferId} is settled`,
-      'TRANSFER_ALREADY_SETTLED',
-      400
-    );
+    super(`Transfer ${transferId} is settled`, 'TRANSFER_ALREADY_SETTLED', 400);
   }
 }
