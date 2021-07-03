@@ -148,3 +148,7 @@ export const deleteTeam = async (team) => {
     teamModel.deleteTeam(team.id),
   ]);
 };
+
+export const incrementTeamBudgetById = async (id, inc) => {
+  await teamModel.incrementTeamBudgetById(id, inc);
+}

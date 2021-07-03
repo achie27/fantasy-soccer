@@ -1,4 +1,4 @@
-import buyNowPlayer from './buyNowPlayer';
+import buyPlayerNow from './buyPlayerNow';
 import createNewPlayer from './createNewPlayer';
 import createNewTeam from './createNewTeam';
 import createNewTransfer from './createNewTransfer';
@@ -11,7 +11,7 @@ import updateTransferById from './updateTransferById';
 import updateUserById from './updateUserById';
 
 export {
-  buyNowPlayer,
+  buyPlayerNow,
   createNewPlayer,
   createNewTeam,
   createNewTransfer,

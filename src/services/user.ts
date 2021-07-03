@@ -1,19 +1,19 @@
 import v4 from 'uuid';
 
-import { IncorrectPassword, UserNotFound } from '../lib/exceptions';
+import { UserNotFound } from '../lib/exceptions';
 import { utilityService, teamService } from '.';
-import { teamModel, userModel, transferModel } from '../models';
+import { userModel, transferModel } from '../models';
 
-export const assertPasswordCorrectness = async (text, hashedUserPassword) => {
-  if (!(await utilityService.compareWithHash(text, hashedUserPassword)))
-    throw new IncorrectPassword();
+export const checkUserPassword = async (id, text) => {
+  await userModel.checkUserPassword(id, text);
 };
 
-export const createUser = async (params) => {
-  const user = { ...params };
-  user.auth.password = await utilityService.hash(user.auth.password);
-
-  const newUser = await userModel.insert(user);
+export const createUser = async (params: {
+  email: userModel.IUser['email'],
+  auth: userModel.IUser['auth'],
+  roles?: userModel.IUser['roles']
+}) => {
+  const newUser = await userModel.insert(params);
   const newTeam = await teamService.createTeam({
     name: `${newUser.id}'s Team`,
     country: utilityService.getRandomCountry(),
@@ -35,21 +35,12 @@ export const fetchUsers = async (params) => {
   return await userModel.fetchUsers(modelParams);
 };
 
-export const getUser = async ({ id, email }) => {
-  const params = {};
-  if (id) params.id = id;
-  if (email) params.email = email;
-
+export const getUser = async (params: utilityService.AtLeastOne<{ id, email }>) => {
   return await userModel.getUser(params);
 };
 
 export const updateUserById = async (id, toUpdate) => {
-  const updates = { ...toUpdate };
-  if (updates.auth?.password) {
-    updates.auth.password = await utilityService.hash(updates.auth.password);
-  }
-
-  return await userModel.updateUser(id, updates);
+  return await userModel.updateUserById(id, toUpdate);
 };
 
 export const deleteUserById = async (id) => {

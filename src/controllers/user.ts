@@ -2,6 +2,7 @@ import express from 'express';
 
 import { UserNotFound, InadequatePermissions } from '../lib/exceptions';
 import { userService, utilityService } from '../services';
+import { userModel } from '../models';
 
 export const createNewUser = async (
   req: express.Request,
@@ -10,14 +11,18 @@ export const createNewUser = async (
 ) => {
   try {
     const { email, password, roles } = req.body;
-    const user: Record<string, any> = {
+    const params: {
+      email: userModel.IUser['email'];
+      auth: userModel.IUser['auth'];
+      roles?: userModel.IUser['roles'];
+    } = {
       email,
       auth: { password },
     };
 
-    if (roles) user.roles = roles.map((r) => ({ name: r.name }));
+    if (roles) params.roles = roles.map((r) => ({ name: r.name }));
 
-    const createdUser = await userService.createUser(user);
+    const createdUser = await userService.createUser(params);
     return res.status(200).json({ data: { userId: createdUser.id } });
   } catch (e) {
     next(e);

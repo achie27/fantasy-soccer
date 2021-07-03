@@ -34,7 +34,7 @@ export const generateNewToken = async (
     const user = await userService.getUser({ email });
     if (!user) throw new UserNotFound(email);
 
-    await userService.assertPasswordCorrectness(user?.auth?.password, password);
+    await userService.checkUserPassword(user.id, password);
 
     const accessToken = authService.generateAccessToken(user);
 
