@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import faker from 'faker';
 
 import { countries } from '../constants';
@@ -45,4 +46,16 @@ export const generateRandomName = (type: 'first' | 'last' | 'full') => {
 
 export const getRandomCountry = () => {
   return countries[getRandInt(0, countries.length)].name;
+};
+
+
+export const hash = async (text: string): Promise<string> => {
+  return await bcrypt.hash(text, 10);
+};
+
+export const compareWithHash = async (
+  text: string,
+  hashedText: string
+): Promise<boolean> => {
+  return await bcrypt.compare(text, hashedText);
 };

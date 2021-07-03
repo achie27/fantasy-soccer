@@ -85,7 +85,7 @@ export const updateUserById = async (
       toUpdate.roles = req.body.roles.map((r) => ({ name: r.name }));
 
     const updatedUser = await userService.updateUserById(
-      { id: req.params.userId },
+      req.params.userId,
       toUpdate
     );
     return res.status(200).json({ data: updatedUser });
@@ -105,9 +105,9 @@ export const deleteUserById = async (
      * 2. Delete all transfer requests
      * 3. Delete team
      */
-    const deletedUser = await userService.deleteUserById({
-      id: req.params.userId,
-    });
+    const deletedUser = await userService.deleteUserById(
+      req.params.userId,
+    );
     return res.status(200).json({ data: deletedUser });
   } catch (e) {
     next(e);
