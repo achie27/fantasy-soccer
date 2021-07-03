@@ -27,5 +27,5 @@ export default {
       required: ['id'],
     },
   },
-  required: ['firstName', 'lastName', 'type', 'country', 'birthDate'],
+  required: ['firstName', 'lastName', 'type', 'country'],
 };

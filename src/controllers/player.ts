@@ -14,9 +14,9 @@ export const createNewPlayer = async (
       lastName: req.body.lastName,
       type: req.body.type,
       country: req.body.country,
-      birthdate: req.body.birthdate,
     };
 
+    if (req.body.birthdate) player.birthdate = req.body.birthdate;
     if (req.body.team?.id) player.team = { id: req.body.team.id };
 
     const createdPlayer = await playerService.createPlayer(player);

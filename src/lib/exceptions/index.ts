@@ -93,3 +93,15 @@ export class TransferNotFound extends BaseContextualError {
     super(`${transferId} doesn't exist`, 'TRANSFER_NOT_FOUND', 404);
   }
 }
+
+export class PlayerAlreadyContracted extends BaseContextualError {
+  constructor(playerId: string) {
+    super(`Player ${playerId} already belongs to another team`, 'PLAYER_ALREADY_CONTRACTED', 400);
+  }
+}
+
+export class MaxTeamsLimitReached extends BaseContextualError {
+  constructor(userId: string) {
+    super(`User ${userId} has reached the maximum allowed number of teams`, 'MAX_TEAMS_LIMIT_REACHED', 400);
+  }
+}
