@@ -7,9 +7,15 @@ import { maxTeamsLimit } from '../constants';
 
 import { playerService } from '../services';
 import { teamModel, playerModel, userModel, transferModel } from '../models';
+import { ParameterDeclaration } from 'typescript';
 
 export const createTeam = async (params) => {
   const team = { ...params };
+
+  const user = await userModel.getUser(team.owner.id);
+  if (user.teams?.length >= maxTeamsLimit) {
+    throw new MaxTeamsLimitReached(user.id);
+  }
 
   if (team.players?.length) {
     const players = await playerModel.fetchPlayersInBulkByIds(
@@ -32,7 +38,7 @@ export const createTeam = async (params) => {
 
   team.budget = 5000000;
 
-  const newTeam: Record<string, any> = await teamModel.insert(team);
+  const newTeam = await teamModel.insert(team);
 
   // should be idempotent
   await userModel.addTeamToUserById(team.owner.id, team.id);
@@ -52,7 +58,7 @@ export const fetchTeams = async (params) => {
   const modelParams = { ...params };
 
   if (modelParams.playerId) {
-    modelParams.players = { id: modelParams.playerId };
+    modelParams.player = { id: modelParams.playerId };
     delete modelParams.playerId;
   }
 
@@ -64,13 +70,13 @@ export const fetchTeams = async (params) => {
   return await teamModel.fetchTeams(modelParams);
 };
 
-export const fetchTeamById = async ({ id, ownerId }) => {
-  const params: Record<string, any> = { id };
-  if (ownerId) {
-    params.owner = { id: ownerId };
+export const fetchTeamById = async (params) => {
+  const modelParams: Parameters<typeof teamModel.fetchTeams>[0] = { id: params.id };
+  if (params.ownerId) {
+    modelParams.owner = { id: params.ownerId };
   }
 
-  return await teamModel.fetchTeams(params)[0];
+  return await teamModel.fetchTeams(modelParams)[0];
 };
 
 export const updateTeamById = async (params, updatedFields) => {
@@ -92,10 +98,10 @@ export const updateTeamById = async (params, updatedFields) => {
     for (const p of newPlayers) {
       if (p.team?.id !== team.id) {
         throw new PlayerAlreadyContracted(p.id);
-      } else {
-        // either uncapped or already in this team
       }
     }
+
+    updatedFields.value = newPlayers.reduce((acc, curPlayer) => acc + curPlayer.value, 0);
 
     const oldPlayersToRemove = [];
     team.players.forEach((p) => {
