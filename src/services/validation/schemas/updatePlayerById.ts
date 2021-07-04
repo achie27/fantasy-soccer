@@ -13,7 +13,7 @@ export default {
     country: {
       type: 'string',
     },
-    birthDate: {
+    birthdate: {
       type: 'string',
       format: 'date-time',
     },

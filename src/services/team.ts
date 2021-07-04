@@ -12,7 +12,7 @@ export const createTeam = async (params) => {
   const team = { ...params };
 
   if (team.players?.length) {
-    const players = await playerModel.fetchPlayersInBulk(
+    const players = await playerModel.fetchPlayersInBulkByIds(
       team.players.map((p) => p.id)
     );
     team.value = players.reduce((acc, curPlayer) => acc + curPlayer.value, 0);
@@ -111,18 +111,17 @@ export const updateTeamById = async (params, updatedFields) => {
   }
 
   if (updatedFields.owner?.id) {
-    // const user = await userModel.fetchUserById(updatedFields.owner.id);
-    // if (user.teams?.length >= maxTeamsLimit) {
-    //   throw new MaxTeamsLimitReached(user.id);
-    // }
+    const user = await userModel.getUser(updatedFields.owner.id);
+    if (user.teams?.length >= maxTeamsLimit) {
+      throw new MaxTeamsLimitReached(user.id);
+    }
 
-    // await userModel.updateUserById(user.id, { teams: user.teams.concat([modelParams.id]) });
     await Promise.all([
       userModel.removeTeamFromUserById(team.owner.id, team.id),
       userModel.addTeamToUserById(updatedFields.owner.id, team.id),
       Promise.all(
         team.players.map(async (p) => {
-          await playerModel.updatePlayerById(p.id, {
+          await playerModel.updatePlayer({ id: p.id }, {
             team: { id: team.id, ownerId: updatedFields.owner.id },
           });
         })
@@ -130,10 +129,7 @@ export const updateTeamById = async (params, updatedFields) => {
     ]);
   }
 
-  const updated = await teamModel.updatePlayer(modelParams, updatedFields);
-  if (!updated) throw new PlayerNotFound(modelParams.id);
-
-  return updated;
+  await teamModel.updateTeam(modelParams, updatedFields);
 };
 
 export const deleteTeam = async (team) => {
@@ -142,7 +138,7 @@ export const deleteTeam = async (team) => {
     userModel.removeTeamFromUserById(team.owner.id, team.id),
     Promise.all(
       team.players.map(async (p) => {
-        await playerModel.updatePlayerById(p.id, { team: null });
+        await playerModel.updatePlayer({ id: p.id }, { team: null });
       })
     ),
     teamModel.deleteTeam(team.id),

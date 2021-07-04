@@ -57,6 +57,7 @@ const sanitiseDoc = (user: IUserDocument): SanitisedUser => {
 
   delete toReturn.__v;
   delete toReturn.auth;
+  delete toReturn._id;
 
   return toReturn;
 };

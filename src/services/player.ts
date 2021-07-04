@@ -3,28 +3,42 @@ import { utilityService } from '../services';
 import { playerModel, teamModel } from '../models';
 
 const generateDOB = () => {
-  const birthDate = new Date();
-  birthDate.setFullYear(
+  const birthdate = new Date();
+  birthdate.setFullYear(
     utilityService.getRandInt(
-      birthDate.getFullYear() - 40,
-      birthDate.getFullYear() - 18
+      birthdate.getFullYear() - 40,
+      birthdate.getFullYear() - 18
     )
   );
-  return birthDate;
+  return birthdate;
 };
 
-export const createPlayer = async (params) => {
-  const player = { ...params, value: 1000000 };
+export const createPlayer = async (params: {
+  type: typeof playerModel.playerTypes[number];
+  firstName: string;
+  lastName: string;
+  country: string;
+  birthdate?: Date;
+  team?: {
+    id: string;
+  };
+}) => {
+  const player: Parameters<typeof playerModel.insert>[0] = {
+    ...params,
+    birthdate: params.birthdate || generateDOB(),
+    value: 1000000,
+  };
 
-  if (!params.birthDate) {
-    player.birthDate = generateDOB();
+  if (player.team?.id) {
+    const [team] = await teamModel.fetchTeams({ id: player.team.id });
+    player.team.ownerId = team.owner.id;
   }
 
-  const newPlayer: Record<string, any> = await playerModel.insert(player);
+  const newPlayer = await playerModel.insert(player);
 
   if (player.team?.id) {
     const [team] = await teamModel.fetchTeams({ id: newPlayer.team.id });
-
+    // TODO: teamModel.addPlayerToTeam
     team.value += newPlayer.value;
     team.players.push({ id: newPlayer.id });
 
@@ -54,10 +68,22 @@ export const fetchPlayers = async (params) => {
     delete modelParams.ownerId;
   }
 
+  if (modelParams.age) {
+    modelParams.birthdate = {};
+    Object.keys(modelParams.age).forEach(op => {
+      const age = modelParams.age[op];
+      const birthdate = new Date();
+      birthdate.setFullYear(birthdate.getFullYear() - age);
+
+      modelParams.birthdate[op] = birthdate;
+    });
+    delete modelParams.age;
+  }
+
   return await playerModel.fetchPlayers(modelParams);
 };
 
-export const fetchPlayerById = async ({ id, ownerId }) => {
+export const fetchPlayerById = async ({ id, ownerId }: { id: string, ownerId?: string }) => {
   const params: Record<string, any> = { id };
   if (ownerId) {
     params.team = { ownerId };
@@ -67,40 +93,41 @@ export const fetchPlayerById = async ({ id, ownerId }) => {
 };
 
 export const updatePlayer = async (params, updatedFields) => {
-  const modelParams = { ...params };
-  if (modelParams.ownerId) {
-    modelParams.team = { ownerId: modelParams.ownerId };
-    delete modelParams.ownerId;
+  const modelParams: Parameters<typeof playerModel.updatePlayer>[0] = {
+    id: params.id
+  };
+  
+  if (params.ownerId) {
+    modelParams.team = { ownerId: params.ownerId };
   }
 
-  if (updatedFields.team?.id || updatedFields.value) {
+  const updates: Parameters<typeof playerModel.updatePlayer>[1] = { ...updatedFields };
+
+  if (updates.team?.id || updates.value) {
     const [player] = await playerModel.fetchPlayers({ id: modelParams.id });
     const [oldTeam] = await teamModel.fetchTeams({ id: player.team.id });
 
-    const [newTeam] = await teamModel.fetchTeams({ id: updatedFields.team.id });
+    const [newTeam] = await teamModel.fetchTeams({ id: updates.team.id });
 
     // oldTeam.value -= player.value;
     // oldTeam.players = oldTeam.players.filter((p) => p.id !== player.id);
 
     await teamModel.removePlayerFromTeam(oldTeam.id, player);
 
-    // newTeam.value += updatedFields.value || player.value;
+    // newTeam.value += updates.value || player.value;
     // newTeam.players.push({ id: player.id });
 
-    player.value = updatedFields.value || player.value;
+    player.value = updates.value || player.value;
 
     await teamModel.addPlayerToTeam(newTeam.id, player);
-    updatedFields.team = { id: newTeam.id, ownerId: newTeam.owner.id };
+    updates.team = { id: newTeam.id, ownerId: newTeam.owner.id };
     // await Promise.all([
     //   teamModel.updateTeam({ id: oldTeam.id }, oldTeam),
     //   teamModel.updateTeam({ id: newTeam.id }, newTeam),
     // ]);
   }
 
-  const updated = await playerModel.updatePlayer(modelParams, updatedFields);
-  if (!updated) throw new PlayerNotFound(modelParams.id);
-
-  return updated;
+  await playerModel.updatePlayer(modelParams, updates);
 };
 
 export const deletePlayer = async (player) => {
@@ -110,7 +137,7 @@ export const deletePlayer = async (player) => {
   // team.value -= player.value;
   // team.players = team.players.filter((p) => p.id !== player.id);
 
-  await playerModel.deletePlayer({ id: player.id });
+  await playerModel.deletePlayer(player.id);
 };
 
 export const getUncappedPlayers = async (params) => {
@@ -126,7 +153,7 @@ export const getUncappedPlayers = async (params) => {
           lastName: utilityService.generateRandomName('last'),
           type,
           country: utilityService.getRandomCountry(),
-          birthDate: generateDOB(),
+          birthdate: generateDOB(),
           value: 1000000,
         };
 

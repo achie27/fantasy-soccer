@@ -9,7 +9,7 @@ export const createNewPlayer = async (
   next: express.NextFunction
 ) => {
   try {
-    const player: Record<string, any> = {
+    const player: Parameters<typeof playerService.createPlayer>[0] = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       type: req.body.type,
@@ -42,11 +42,11 @@ export const fetchPlayers = async (
     if (req.query.firstName) params.firstName = req.query.firstName;
     if (req.query.lastName) params.lastName = req.query.lastName;
     if (req.query.value)
-      params.value = utilityService.extractComparisonOperators(
+      params.value = utilityService.extractComparisonOperators<number>(
         req.query.value as Record<string, any>
       );
     if (req.query.age)
-      params.age = utilityService.extractComparisonOperators(
+      params.age = utilityService.extractComparisonOperators<number>(
         req.query.age as Record<string, any>
       );
 
@@ -66,7 +66,7 @@ export const fetchPlayerById = async (
   next: express.NextFunction
 ) => {
   try {
-    const params: Record<string, any> = { id: req.params.playerId };
+    const params: Parameters<typeof playerService.fetchPlayerById>[0] = { id: req.params.playerId };
 
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
@@ -96,14 +96,14 @@ export const updatePlayerById = async (
 
     if (req.context.user.roles.map((r) => r.name).includes('ADMIN')) {
       if (req.body.value) toUpdate.value = req.body.value;
-      if (req.body.birthDate) toUpdate.birthDate = req.body.birthDate;
+      if (req.body.birthdate) toUpdate.birthdate = req.body.birthdate;
       if (req.body.team?.id) toUpdate.team = { id: req.body.team.id };
     } else {
       params.ownerId = req.context.user.id;
     }
 
-    const updatedPlayer = await playerService.updatePlayer(params, toUpdate);
-    return res.status(200).json({ data: updatedPlayer });
+    await playerService.updatePlayer(params, toUpdate);
+    return res.status(200).json({});
   } catch (e) {
     next(e);
   }

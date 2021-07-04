@@ -6,18 +6,18 @@ import { countries } from '../constants';
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
   U[keyof U];
 
-export interface NumericOperators {
-  lte?: number;
-  gte?: number;
-  lt?: number;
-  gt?: number;
-  eq?: number;
+export interface ComparisonOperators<T> {
+  lte: T;
+  gte: T;
+  lt: T;
+  gt: T;
+  eq: T;
 }
 
-export const extractComparisonOperators = (
-  map: Record<string, any>
-): NumericOperators => {
-  const operators: NumericOperators = {};
+export const extractComparisonOperators = <T>(
+  map: Record<string, T>
+) => {
+  const operators: AtLeastOne<ComparisonOperators<T>> = {} as AtLeastOne<ComparisonOperators<T>>;
   if (map.lte) operators.lte = map.lte;
 
   if (map.gte) operators.gte = map.gte;
@@ -27,6 +27,31 @@ export const extractComparisonOperators = (
   if (map.gt) operators.gt = map.gt;
 
   if (map.eq) operators.eq = map.eq;
+
+  return operators;
+};
+
+interface MongoComparisonOperators {
+  lte: number;
+  gte: number;
+  lt: number;
+  gt: number;
+  eq: number;
+}
+
+export const convertToMongoCompOperators = <T>(
+  map: AtLeastOne<ComparisonOperators<T>>
+) => {
+  const operators: AtLeastOne<MongoComparisonOperators> = {} as AtLeastOne<MongoComparisonOperators>;
+  if (map.lte) operators['$lte'] = map.lte;
+
+  if (map.gte) operators['$gte'] = map.gte;
+
+  if (map.lt) operators['$lt'] = map.lt;
+
+  if (map.gt) operators['$gt'] = map.gt;
+
+  if (map.eq) operators['$eq'] = map.eq;
 
   return operators;
 };
