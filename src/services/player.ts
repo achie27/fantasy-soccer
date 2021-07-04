@@ -110,7 +110,7 @@ export const updatePlayer = async (params, updatedFields) => {
     const [player] = await playerModel.fetchPlayers({ id: modelParams.id });
     const [oldTeam] = await teamModel.fetchTeams({ id: player.team.id });
     const [newTeam] = await teamModel.fetchTeams({ id: updates.team.id });
-    
+
     await teamModel.removePlayerFromTeam(oldTeam.id, player);
     player.value = updates.value || player.value;
     await teamModel.addPlayerToTeam(newTeam.id, player);
@@ -142,7 +142,7 @@ export const getUncappedPlayers = async (params) => {
           birthdate: generateDOB(),
           value: 1000000,
         });
-        
+
         players.push(newPlayer);
       }
       uncappedPlayers.push(...players);

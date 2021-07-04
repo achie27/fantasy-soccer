@@ -71,7 +71,9 @@ export const fetchTeams = async (params) => {
 };
 
 export const fetchTeamById = async (params) => {
-  const modelParams: Parameters<typeof teamModel.fetchTeams>[0] = { id: params.id };
+  const modelParams: Parameters<typeof teamModel.fetchTeams>[0] = {
+    id: params.id,
+  };
   if (params.ownerId) {
     modelParams.owner = { id: params.ownerId };
   }
@@ -101,7 +103,10 @@ export const updateTeamById = async (params, updatedFields) => {
       }
     }
 
-    updatedFields.value = newPlayers.reduce((acc, curPlayer) => acc + curPlayer.value, 0);
+    updatedFields.value = newPlayers.reduce(
+      (acc, curPlayer) => acc + curPlayer.value,
+      0
+    );
 
     const oldPlayersToRemove = [];
     team.players.forEach((p) => {
