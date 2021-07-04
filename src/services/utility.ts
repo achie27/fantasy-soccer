@@ -14,10 +14,10 @@ export interface ComparisonOperators<T> {
   eq: T;
 }
 
-export const extractComparisonOperators = <T>(
-  map: Record<string, T>
-) => {
-  const operators: AtLeastOne<ComparisonOperators<T>> = {} as AtLeastOne<ComparisonOperators<T>>;
+export const extractComparisonOperators = <T>(map: Record<string, T>) => {
+  const operators: AtLeastOne<ComparisonOperators<T>> = {} as AtLeastOne<
+    ComparisonOperators<T>
+  >;
   if (map.lte) operators.lte = map.lte;
 
   if (map.gte) operators.gte = map.gte;
@@ -42,7 +42,8 @@ interface MongoComparisonOperators {
 export const convertToMongoCompOperators = <T>(
   map: AtLeastOne<ComparisonOperators<T>>
 ) => {
-  const operators: AtLeastOne<MongoComparisonOperators> = {} as AtLeastOne<MongoComparisonOperators>;
+  const operators: AtLeastOne<MongoComparisonOperators> =
+    {} as AtLeastOne<MongoComparisonOperators>;
   if (map.lte) operators['$lte'] = map.lte;
 
   if (map.gte) operators['$gte'] = map.gte;

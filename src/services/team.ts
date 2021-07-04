@@ -121,9 +121,12 @@ export const updateTeamById = async (params, updatedFields) => {
       userModel.addTeamToUserById(updatedFields.owner.id, team.id),
       Promise.all(
         team.players.map(async (p) => {
-          await playerModel.updatePlayer({ id: p.id }, {
-            team: { id: team.id, ownerId: updatedFields.owner.id },
-          });
+          await playerModel.updatePlayer(
+            { id: p.id },
+            {
+              team: { id: team.id, ownerId: updatedFields.owner.id },
+            }
+          );
         })
       ),
     ]);

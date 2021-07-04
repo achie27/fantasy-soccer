@@ -70,7 +70,7 @@ export const fetchPlayers = async (params) => {
 
   if (modelParams.age) {
     modelParams.birthdate = {};
-    Object.keys(modelParams.age).forEach(op => {
+    Object.keys(modelParams.age).forEach((op) => {
       const age = modelParams.age[op];
       const birthdate = new Date();
       birthdate.setFullYear(birthdate.getFullYear() - age);
@@ -83,7 +83,13 @@ export const fetchPlayers = async (params) => {
   return await playerModel.fetchPlayers(modelParams);
 };
 
-export const fetchPlayerById = async ({ id, ownerId }: { id: string, ownerId?: string }) => {
+export const fetchPlayerById = async ({
+  id,
+  ownerId,
+}: {
+  id: string;
+  ownerId?: string;
+}) => {
   const params: Record<string, any> = { id };
   if (ownerId) {
     params.team = { ownerId };
@@ -94,14 +100,16 @@ export const fetchPlayerById = async ({ id, ownerId }: { id: string, ownerId?: s
 
 export const updatePlayer = async (params, updatedFields) => {
   const modelParams: Parameters<typeof playerModel.updatePlayer>[0] = {
-    id: params.id
+    id: params.id,
   };
-  
+
   if (params.ownerId) {
     modelParams.team = { ownerId: params.ownerId };
   }
 
-  const updates: Parameters<typeof playerModel.updatePlayer>[1] = { ...updatedFields };
+  const updates: Parameters<typeof playerModel.updatePlayer>[1] = {
+    ...updatedFields,
+  };
 
   if (updates.team?.id || updates.value) {
     const [player] = await playerModel.fetchPlayers({ id: modelParams.id });

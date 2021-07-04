@@ -8,10 +8,7 @@ export const playerTypes = [
   'ATTACKER',
 ] as const;
 
-import {
-  InternalServerError,
-  PlayerNotFound,
-} from '../lib/exceptions';
+import { InternalServerError, PlayerNotFound } from '../lib/exceptions';
 import logger from '../lib/logger';
 import { utilityService } from '../services';
 import { AtLeastOne } from '../services/utility';
@@ -124,32 +121,35 @@ export const updatePlayer = async (
   try {
     const res = await Player.updateOne(params as any, { $set: updates });
     if (res.n === 0) throw new PlayerNotFound(params.id);
-
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
   }
 };
 
-export const fetchPlayers = async (
-  params: {
-    id?: string;
-    type?: string;
-    firstName?: string;
-    lastName?: string;
-    value?: utilityService.ComparisonOperators<number>;
-    country?: string;
-    birthdate?: utilityService.ComparisonOperators<Date>;
-    team?: {
-      id: string;
-      ownerId: string;
-    };
-  }
-): Promise<SanitisedPlayer[]> => {
+export const fetchPlayers = async (params: {
+  id?: string;
+  type?: string;
+  firstName?: string;
+  lastName?: string;
+  value?: utilityService.ComparisonOperators<number>;
+  country?: string;
+  birthdate?: utilityService.ComparisonOperators<Date>;
+  team?: {
+    id: string;
+    ownerId: string;
+  };
+}): Promise<SanitisedPlayer[]> => {
   try {
     const p: Record<string, any> = { ...params };
-    if (p.value) p.value = utilityService.convertToMongoCompOperators<number>(params.value);
-    if (p.birthdate) p.birthdate = utilityService.convertToMongoCompOperators<Date>(params.birthdate);
+    if (p.value)
+      p.value = utilityService.convertToMongoCompOperators<number>(
+        params.value
+      );
+    if (p.birthdate)
+      p.birthdate = utilityService.convertToMongoCompOperators<Date>(
+        params.birthdate
+      );
 
     const players = await Player.find(p);
     return players.map(sanitiseDoc);

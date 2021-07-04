@@ -66,7 +66,9 @@ export const fetchPlayerById = async (
   next: express.NextFunction
 ) => {
   try {
-    const params: Parameters<typeof playerService.fetchPlayerById>[0] = { id: req.params.playerId };
+    const params: Parameters<typeof playerService.fetchPlayerById>[0] = {
+      id: req.params.playerId,
+    };
 
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
