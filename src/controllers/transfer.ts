@@ -45,9 +45,8 @@ export const buyPlayerNow = async (
     // should be inadeuate permissions actually
     if (!toTeam) throw new TeamNotFound(req.body.team.id);
 
-    const transfer = await transferService.fetchTransferById(
-      req.params.transferId
-    );
+    const transfer = await transferService.fetchTransferById({ id: req.params.transferId });
+    if (!transfer) throw new TransferNotFound(req.params.transferId);
 
     await transferService.settleTransfer(transfer, toTeam);
 
@@ -93,7 +92,7 @@ export const fetchTransferById = async (
   next: express.NextFunction
 ) => {
   try {
-    const params: Record<string, any> = { id: req.params.transferId };
+    const params: Parameters<typeof transferService.fetchTransferById>[0] = { id: req.params.transferId };
 
     const transfer = await transferService.fetchTransferById(params);
     if (!transfer) throw new TransferNotFound(params.id);
@@ -136,7 +135,7 @@ export const deleteTransferById = async (
   next: express.NextFunction
 ) => {
   try {
-    const params: Record<string, any> = { id: req.params.transferId };
+    const params: Parameters<typeof transferService.fetchTransferById>[0] = { id: req.params.transferId };
 
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.createdByUser = req.context.user.id;

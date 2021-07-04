@@ -50,7 +50,7 @@ export const deleteUserById = async (id) => {
   if (!user) throw new UserNotFound(id);
 
   await Promise.all([
-    transferModel.deleteTransfersOfUserById(id),
+    transferModel.deleteOpenTransfersOfUserById(id),
     Promise.all(
       user.teams.map(
         async (t) =>

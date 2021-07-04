@@ -148,7 +148,7 @@ export const updateTeamById = async (params, updatedFields) => {
 
 export const deleteTeam = async (team) => {
   await Promise.all([
-    transferModel.deleteTransfersOfTeamById(team.id),
+    transferModel.deleteOpenTransfersOfTeamById(team.id),
     userModel.removeTeamFromUserById(team.owner.id, team.id),
     Promise.all(
       team.players.map(async (p) => {

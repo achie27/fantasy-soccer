@@ -9,21 +9,25 @@ import { playerService, teamService, utilityService } from '../services';
 import { teamModel, transferModel } from '../models';
 
 export const createTransfer = async (params) => {
-  const transfer = { ...params };
+  const transfer: Parameters<typeof transferModel.insert>[0] = { ...params };
 
   transfer.status = 'OPEN';
   transfer.openedDate = new Date();
 
-  return await transferModel.insertTransfer(transfer);
+  return await transferModel.insert(transfer);
 };
 
-export const fetchTransferById = async ({ id }) => {
-  return await transferModel.fetchTransferById({ id });
+export const fetchTransferById = async ({ id, createdByUser }: { id: string, createdByUser?: string }) => {
+  return await transferModel.fetchTransferById({ id, createdByUser });
 };
 
 export const settleTransfer = async (transfer, toTeam) => {
   if (transfer.buyNowPrice > toTeam.budget) {
     throw new InadequateBudget(toTeam.id);
+  }
+
+  if (transfer.status !== 'OPEN') {
+    throw new TransferNotOpen(transfer.id);
   }
 
   const player = await playerService.fetchPlayerById({
@@ -92,7 +96,7 @@ export const updateTransferById = async (params, updatedFields) => {
       throw new PlayerInDifferentTeam(player.id);
   }
 
-  return await transferModel.updateTransferById(params.id, updatedFields);
+  return await transferModel.updateTransferById({ id: params.id }, updatedFields);
 };
 
 export const deleteTransfer = async (transfer) => {
