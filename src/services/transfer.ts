@@ -17,7 +17,13 @@ export const createTransfer = async (params) => {
   return await transferModel.insert(transfer);
 };
 
-export const fetchTransferById = async ({ id, createdByUser }: { id: string, createdByUser?: string }) => {
+export const fetchTransferById = async ({
+  id,
+  createdByUser,
+}: {
+  id: string;
+  createdByUser?: string;
+}) => {
   return await transferModel.fetchTransferById({ id, createdByUser });
 };
 
@@ -96,7 +102,10 @@ export const updateTransferById = async (params, updatedFields) => {
       throw new PlayerInDifferentTeam(player.id);
   }
 
-  return await transferModel.updateTransferById({ id: params.id }, updatedFields);
+  return await transferModel.updateTransferById(
+    { id: params.id },
+    updatedFields
+  );
 };
 
 export const deleteTransfer = async (transfer) => {

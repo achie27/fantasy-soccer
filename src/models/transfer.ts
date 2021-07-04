@@ -22,8 +22,8 @@ export interface ITransfer {
   openedDate: Date;
   completedDate?: Date;
   toTeam?: {
-    id: string
-  }
+    id: string;
+  };
 }
 
 const transferSchema = new Schema<ITransfer>({
@@ -46,14 +46,15 @@ const transferSchema = new Schema<ITransfer>({
 
 export interface ITransferDocument extends ITransfer, Document {
   id: string;
-};
+}
 
-const Transfer: Model<ITransferDocument> = model('Transfer', transferSchema, 'transfers');
+const Transfer: Model<ITransferDocument> = model(
+  'Transfer',
+  transferSchema,
+  'transfers'
+);
 
-type SanitisedTransfer = Omit<
-  LeanDocument<ITransferDocument>,
-  '_id' | '__v'
->;
+type SanitisedTransfer = Omit<LeanDocument<ITransferDocument>, '_id' | '__v'>;
 
 type ExtendedTransfer = SanitisedTransfer & {
   player: {
@@ -61,73 +62,67 @@ type ExtendedTransfer = SanitisedTransfer & {
     country: string;
   };
   initiatorTeam: {
-    name: string
+    name: string;
   };
 };
 
 const metaDetailsJoinPipeline = [
-    {
-      $lookup: {
-        from: 'players',
-        let: { playerId: '$player.id' },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ['$id', '$$playerId'] 
-              }
-            }
+  {
+    $lookup: {
+      from: 'players',
+      let: { playerId: '$player.id' },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ['$id', '$$playerId'],
+            },
           },
-          {
-            $project: {
-              _id: 0,
-              value: 1,
-              country: 1
-            }
-          }
-        ],
-        as: 'playerMeta'
-      }
-    },
-    {
-      $lookup: {
-        from: 'teams',
-        let: { teamId: '$initiatorTeam.id' },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ['$id', '$$teamId'] 
-              }
-            }
-          },
-          {
-            $project: {
-              _id: 0,
-              name: 1,
-            }
-          }
-        ],
-        as: 'teamMeta'
-      }
-    },
-    {
-      $addFields: { 
-        player: {
-          $mergeObjects: [ 
-            { $arrayElemAt: [ '$playerMeta', 0 ] }, 
-            '$player' 
-          ]
         },
-        initiatorTeam: {
-          $mergeObjects: [ 
-            { $arrayElemAt: [ '$teamMeta', 0 ] }, 
-            '$initiatorTeam' 
-          ]
-        }
-      }
+        {
+          $project: {
+            _id: 0,
+            value: 1,
+            country: 1,
+          },
+        },
+      ],
+      as: 'playerMeta',
     },
-  ];
+  },
+  {
+    $lookup: {
+      from: 'teams',
+      let: { teamId: '$initiatorTeam.id' },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ['$id', '$$teamId'],
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+          },
+        },
+      ],
+      as: 'teamMeta',
+    },
+  },
+  {
+    $addFields: {
+      player: {
+        $mergeObjects: [{ $arrayElemAt: ['$playerMeta', 0] }, '$player'],
+      },
+      initiatorTeam: {
+        $mergeObjects: [{ $arrayElemAt: ['$teamMeta', 0] }, '$initiatorTeam'],
+      },
+    },
+  },
+];
 
 const sanitiseDoc = (user: ITransferDocument): SanitisedTransfer => {
   const toReturn = user.toJSON();
@@ -178,7 +173,7 @@ export const deleteOpenTransfersOfUserById = async (
   userId: string
 ): Promise<void> => {
   try {
-    await Transfer.deleteMany({ 'createdByUser': userId, status: 'OPEN' });
+    await Transfer.deleteMany({ createdByUser: userId, status: 'OPEN' });
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
@@ -204,19 +199,31 @@ export const fetchTransfers = async (params: {
       {
         $match: {
           ...(params.id && { id: params.id }),
-          ...(params.buyNowPrice && { buyNowPrice: utilityService.convertToMongoCompOperators(params.buyNowPrice) }),
+          ...(params.buyNowPrice && {
+            buyNowPrice: utilityService.convertToMongoCompOperators(
+              params.buyNowPrice
+            ),
+          }),
           ...(params.status && { status: params.status }),
           ...(params.createdByUser && { createdByUser: params.createdByUser }),
           ...(params.player?.id && { 'player.id': params.player.id }),
-        }
+        },
       },
       ...metaDetailsJoinPipeline,
       {
         $match: {
-          ...(params.player?.value && { 'player.value': utilityService.convertToMongoCompOperators(params.player.value) }),
-          ...(params.player?.country && { 'player.country': params.player.country }),
-          ...(params.initiatorTeam?.name && { 'initiatorTeam.name': params.initiatorTeam.name }),
-        }
+          ...(params.player?.value && {
+            'player.value': utilityService.convertToMongoCompOperators(
+              params.player.value
+            ),
+          }),
+          ...(params.player?.country && {
+            'player.country': params.player.country,
+          }),
+          ...(params.initiatorTeam?.name && {
+            'initiatorTeam.name': params.initiatorTeam.name,
+          }),
+        },
       },
       {
         $project: {
@@ -224,8 +231,8 @@ export const fetchTransfers = async (params: {
           __v: 0,
           teamMeta: 0,
           playerMeta: 0,
-        }
-      }
+        },
+      },
     ];
 
     return await Transfer.aggregate(aggPipeline);
@@ -235,7 +242,13 @@ export const fetchTransfers = async (params: {
   }
 };
 
-export const fetchTransferById = async ({ id, createdByUser }: { id: string, createdByUser?: string }): Promise<ExtendedTransfer>  => {
+export const fetchTransferById = async ({
+  id,
+  createdByUser,
+}: {
+  id: string;
+  createdByUser?: string;
+}): Promise<ExtendedTransfer> => {
   return await fetchTransfers({ id, createdByUser })[0];
 };
 
