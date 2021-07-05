@@ -119,10 +119,13 @@ export const updatePlayer = async (
   updates: AtLeastOne<Omit<IPlayer, 'id'>>
 ): Promise<void> => {
   try {
-    const res = await Player.updateOne({
-      id: params.id,
-      ...(params.team?.ownerId && { 'team.ownerId': params.team.ownerId }),
-    }, { $set: updates });
+    const res = await Player.updateOne(
+      {
+        id: params.id,
+        ...(params.team?.ownerId && { 'team.ownerId': params.team.ownerId }),
+      },
+      { $set: updates }
+    );
     if (res.n === 0) throw new PlayerNotFound(params.id);
   } catch (e) {
     logger.error(e);
@@ -142,7 +145,7 @@ export const fetchPlayers = async (params: {
     id: string;
     ownerId: string;
   };
-  uncapped?: boolean
+  uncapped?: boolean;
 }): Promise<SanitisedPlayer[]> => {
   try {
     console.log(params);
@@ -169,10 +172,7 @@ export const fetchPlayers = async (params: {
     }
 
     if (p.uncapped) {
-      p['$or'] = [
-        { 'team': { $exists: false } },
-        { 'team': { $eq: null } },
-      ];
+      p['$or'] = [{ team: { $exists: false } }, { team: { $eq: null } }];
 
       delete p.uncapped;
       delete p['team.ownerId'];

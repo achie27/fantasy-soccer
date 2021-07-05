@@ -49,7 +49,7 @@ ajv.addKeyword({
   type: 'string',
   schemaType: 'boolean',
   async validate(schema, data) {
-    console.log(data)
+    console.log(data);
     return await playerModel.doesPlayerExist(data);
   },
 });

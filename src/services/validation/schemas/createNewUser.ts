@@ -18,14 +18,13 @@ export default {
     },
     roles: {
       type: 'array',
-      items:
-        {
-          type: 'object',
-          properties: {
-            name: { type: 'string', enum: userModel.userRoles },
-          },
-          required: ['name'],
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', enum: userModel.userRoles },
         },
+        required: ['name'],
+      },
     },
   },
   required: ['email', 'auth'],

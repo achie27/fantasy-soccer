@@ -146,7 +146,6 @@ export class TransferAlreadySettled extends BaseContextualError {
   }
 }
 
-
 export class NothingToUpdate extends BaseContextualError {
   constructor() {
     super(`None of the fields are update-able`, 'NOTHING_TO_UPDATE', 400);

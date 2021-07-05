@@ -4,7 +4,7 @@ import {
   InadequatePermissions,
   TransferNotOpen,
   PlayerNotFound,
-  InvalidTransferRequest
+  InvalidTransferRequest,
 } from '../lib/exceptions';
 
 import { playerService, teamService, utilityService } from '../services';
@@ -13,17 +13,22 @@ import { transferModel } from '../models';
 export const createTransfer = async (params) => {
   const transfer: Parameters<typeof transferModel.insert>[0] = { ...params };
 
-  const player = await playerService.fetchPlayerById({ id: transfer.player.id, ownerId: transfer.initiatorTeam?.ownerId })
+  const player = await playerService.fetchPlayerById({
+    id: transfer.player.id,
+    ownerId: transfer.initiatorTeam?.ownerId,
+  });
   if (!player) {
-    throw new PlayerNotFound(transfer.player.id)
+    throw new PlayerNotFound(transfer.player.id);
   }
 
   const pendingTransfers = await transferModel.fetchTransfers({
     player: { id: transfer.player.id },
-    status: 'OPEN'
+    status: 'OPEN',
   });
   if (pendingTransfers.length > 0) {
-    throw new InvalidTransferRequest(`${transfer.player.id} already has pending transfer`);
+    throw new InvalidTransferRequest(
+      `${transfer.player.id} already has pending transfer`
+    );
   }
 
   transfer.status = 'OPEN';

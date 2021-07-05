@@ -21,18 +21,16 @@ export default {
     },
     players: {
       type: 'array',
-      items: 
-        {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              validPlayerId: true,
-            },
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            validPlayerId: true,
           },
-          required: ['id'],
         },
-
+        required: ['id'],
+      },
     },
   },
   required: ['name', 'country'],
