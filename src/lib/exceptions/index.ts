@@ -60,6 +60,12 @@ export class InvalidAccessToken extends BaseContextualError {
   }
 }
 
+export class InvalidRefreshToken extends BaseContextualError {
+  constructor(reason: string) {
+    super(reason, 'INVALID_REFRESH_TOKEN', 400);
+  }
+}
+
 export class InadequatePermissions extends BaseContextualError {
   constructor() {
     super(

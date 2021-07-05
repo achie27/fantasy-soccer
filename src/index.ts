@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import cp from 'cookie-parser';
 
 import { serverPort, dbUri } from './config';
 import {
@@ -20,6 +21,7 @@ const app = express();
 
 app.use(helmet());
 app.use(cors()); // TODO; add whitelist
+app.use(cp());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));

@@ -1,9 +1,12 @@
+import { refreshTokenExpiry } from '../config';
 import express from 'express';
 
 import {
   InvalidAccessToken,
   InadequatePermissions,
   UserNotFound,
+  InvalidRefreshToken,
+  InvalidInput,
 } from '../lib/exceptions';
 import { userService, authService } from '../services';
 
@@ -37,8 +40,48 @@ export const generateNewToken = async (
     await userService.checkUserPassword(user.id, password);
 
     const accessToken = authService.generateAccessToken(user);
+    const refreshToken = authService.generateRefreshToken(user);
 
-    return res.status(200).json({ data: { id: user.id, accessToken } });
+    return res
+      .cookie('refresh-token', refreshToken, {
+        maxAge: refreshTokenExpiry,
+        httpOnly: true,
+      })
+      .status(200)
+      .json({ data: { id: user.id, accessToken } });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const refreshToken = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const accessToken: string = req.header('access-token');
+    const refreshToken: string = req.cookies['refresh-token'];
+    if (accessToken && refreshToken) {
+      const at: any = authService.decodeAccessToken(accessToken);
+      const rt: any = authService.decodeRefreshToken(refreshToken);
+
+      if (at.id === rt.id) {
+        const user = await userService.getUser({ id: at.id });
+        if (!user) throw new UserNotFound(at.id);
+
+        const newAT = authService.generateAccessToken(user);
+        return res
+          .status(200)
+          .json({ data: { id: at.id, accessToken: newAT } });
+      } else {
+        throw new InvalidInput('A token is incorrect');
+      }
+    } else {
+      throw accessToken
+        ? new InvalidRefreshToken(refreshToken)
+        : new InvalidAccessToken(accessToken);
+    }
   } catch (e) {
     next(e);
   }
@@ -57,25 +100,6 @@ export const populateUserContext = async (
       next();
     } else {
       throw new InvalidAccessToken(accessToken);
-    }
-  } catch (e) {
-    next(e);
-  }
-};
-
-export const verifyAuth = async (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) => {
-  try {
-    const accessToken: string = req.header('access-token');
-    if (accessToken) {
-      const valid = authService.verifyAccessToken(accessToken);
-      if (valid) next();
-      else throw new InvalidAccessToken(accessToken);
-    } else {
-      return res.status(403).end();
     }
   } catch (e) {
     next(e);

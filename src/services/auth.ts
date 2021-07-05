@@ -1,8 +1,13 @@
 import jwt from 'jsonwebtoken';
 
 import logger from '../lib/logger';
-import { accessTokenSecret, accessTokenExpiry } from '../config';
-import { InvalidAccessToken } from '../lib/exceptions';
+import {
+  refreshTokenSecret,
+  refreshTokenExpiry,
+  accessTokenSecret,
+  accessTokenExpiry,
+} from '../config';
+import { InvalidAccessToken, InvalidRefreshToken } from '../lib/exceptions';
 
 export const generateAccessToken = (user) => {
   const jwtPayload = {
@@ -12,6 +17,16 @@ export const generateAccessToken = (user) => {
 
   return jwt.sign(jwtPayload, accessTokenSecret, {
     expiresIn: accessTokenExpiry,
+  });
+};
+
+export const generateRefreshToken = (user) => {
+  const jwtPayload = {
+    id: user.id,
+  };
+
+  return jwt.sign(jwtPayload, refreshTokenSecret, {
+    expiresIn: refreshTokenExpiry,
   });
 };
 
@@ -25,3 +40,14 @@ export const decodeAccessToken = (token: string) => {
 };
 
 export const verifyAccessToken = decodeAccessToken;
+
+export const decodeRefreshToken = (token: string) => {
+  try {
+    return jwt.verify(token, refreshTokenSecret);
+  } catch (e) {
+    logger.error(e);
+    throw new InvalidRefreshToken(e.message);
+  }
+};
+
+export const verifyRefreshToken = decodeRefreshToken;

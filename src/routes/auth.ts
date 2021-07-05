@@ -13,6 +13,11 @@ authRouter.post(
   validationController.validateRequestBody('generateNewToken'),
   authController.generateNewToken
 );
-// authRouter.post("/token/refresh", authController.refreshToken);
+
+authRouter.post(
+  '/token/refresh',
+  authController.populateUserContext,
+  authController.refreshToken
+);
 
 export default authRouter;
