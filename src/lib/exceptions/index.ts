@@ -145,3 +145,16 @@ export class TransferAlreadySettled extends BaseContextualError {
     super(`Transfer ${transferId} is settled`, 'TRANSFER_ALREADY_SETTLED', 400);
   }
 }
+
+
+export class NothingToUpdate extends BaseContextualError {
+  constructor() {
+    super(`None of the fields are update-able`, 'NOTHING_TO_UPDATE', 400);
+  }
+}
+
+export class InvalidTransferRequest extends BaseContextualError {
+  constructor(reason: string) {
+    super(reason, 'INVALID_TRANSFER_REQUEST', 400);
+  }
+}

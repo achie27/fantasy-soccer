@@ -40,7 +40,7 @@ const transferSchema = new Schema<ITransfer>({
   openedDate: { type: Date, required: true },
   completedDate: { type: Date },
   toTeam: {
-    id: { type: String, required: true, index: true },
+    id: { type: String, index: true },
   },
 });
 
@@ -286,7 +286,7 @@ export const deleteTransferById = async (id: string): Promise<void> => {
 };
 
 export const doesTransferExist = async (id: string): Promise<boolean> => {
-  const res = await Transfer.findOne({ id }, { _id: 0, id: 0 });
+  const res = await Transfer.findOne({ id }, { _id: 0, id: 1 });
   if (res) return true;
   return false;
 };

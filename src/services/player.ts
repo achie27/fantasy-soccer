@@ -1,4 +1,4 @@
-import { PlayerNotFound } from '../lib/exceptions';
+import { NothingToUpdate } from '../lib/exceptions';
 import { utilityService } from '../services';
 import { playerModel, teamModel } from '../models';
 
@@ -46,11 +46,6 @@ export const createPlayer = async (params: {
 export const fetchPlayers = async (params) => {
   const modelParams = { ...params };
 
-  if (modelParams.uncapped) {
-    delete modelParams.uncapped;
-    modelParams.team = { id: null };
-  }
-
   if (modelParams.teamId) {
     modelParams.team = { id: modelParams.teamId };
     delete modelParams.teamId;
@@ -70,7 +65,7 @@ export const fetchPlayers = async (params) => {
       const birthdate = new Date();
       birthdate.setFullYear(birthdate.getFullYear() - age);
 
-      modelParams.birthdate[op] = birthdate;
+      modelParams.birthdate[utilityService.reverseCompMap[op]] = birthdate;
     });
     delete modelParams.age;
   }
@@ -118,6 +113,8 @@ export const updatePlayer = async (params, updatedFields) => {
 
     updates.team = { id: newTeam.id, ownerId: newTeam.owner.id };
   }
+
+  if (Object.keys(updates).length === 0) throw new NothingToUpdate();
 
   await playerModel.updatePlayer(modelParams, updates);
 };

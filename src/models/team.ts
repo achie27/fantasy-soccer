@@ -183,7 +183,7 @@ export const incrementTeamBudgetById = async (
 };
 
 export const doesTeamExist = async (id: string): Promise<boolean> => {
-  const res = await Team.findOne({ id }, { _id: 0, id: 0 });
+  const res = await Team.findOne({ id }, { _id: 0, id: 1 });
   if (res) return true;
   return false;
 };

@@ -14,6 +14,14 @@ export interface ComparisonOperators<T> {
   eq: T;
 }
 
+export const reverseCompMap: ComparisonOperators<string> = {
+  lte: 'gte',
+  gte: 'lte',
+  lt: 'gt',
+  gt: 'lt',
+  eq: 'eq',
+};
+
 export const extractComparisonOperators = <T>(map: Record<string, T>) => {
   const operators: AtLeastOne<ComparisonOperators<T>> = {} as AtLeastOne<
     ComparisonOperators<T>

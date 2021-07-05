@@ -2,6 +2,7 @@ import {
   PlayerNotFound,
   PlayerAlreadyContracted,
   MaxTeamsLimitReached,
+  TeamNotFound,
 } from '../lib/exceptions';
 import { maxTeamsLimit } from '../constants';
 
@@ -90,6 +91,7 @@ export const updateTeamById = async (params, updatedFields) => {
   }
 
   const [team] = await teamModel.fetchTeams(modelParams);
+  if (!team) throw new TeamNotFound(modelParams.id);
 
   // should either be uncapped or in the same team
   if (updatedFields.players) {
@@ -98,7 +100,7 @@ export const updateTeamById = async (params, updatedFields) => {
     );
 
     for (const p of newPlayers) {
-      if (p.team?.id !== team.id) {
+      if (p.team?.id && p.team?.id !== team.id) {
         throw new PlayerAlreadyContracted(p.id);
       }
     }

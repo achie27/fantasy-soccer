@@ -119,7 +119,10 @@ export const updatePlayer = async (
   updates: AtLeastOne<Omit<IPlayer, 'id'>>
 ): Promise<void> => {
   try {
-    const res = await Player.updateOne(params as any, { $set: updates });
+    const res = await Player.updateOne({
+      id: params.id,
+      ...(params.team?.ownerId && { 'team.ownerId': params.team.ownerId }),
+    }, { $set: updates });
     if (res.n === 0) throw new PlayerNotFound(params.id);
   } catch (e) {
     logger.error(e);
@@ -139,8 +142,11 @@ export const fetchPlayers = async (params: {
     id: string;
     ownerId: string;
   };
+  uncapped?: boolean
 }): Promise<SanitisedPlayer[]> => {
   try {
+    console.log(params);
+
     const p: Record<string, any> = { ...params };
     if (p.value)
       p.value = utilityService.convertToMongoCompOperators<number>(
@@ -162,6 +168,16 @@ export const fetchPlayers = async (params: {
       delete p.team;
     }
 
+    if (p.uncapped) {
+      p['$or'] = [
+        { 'team': { $exists: false } },
+        { 'team': { $eq: null } },
+      ];
+
+      delete p.uncapped;
+      delete p['team.ownerId'];
+    }
+
     const players = await Player.find(p);
     return players.map(sanitiseDoc);
   } catch (e) {
@@ -171,7 +187,7 @@ export const fetchPlayers = async (params: {
 };
 
 export const doesPlayerExist = async (id: string): Promise<boolean> => {
-  const res = await Player.findOne({ id }, { _id: 0, id: 0 });
+  const res = await Player.findOne({ id }, { _id: 0, id: 1 });
   if (res) return true;
   return false;
 };

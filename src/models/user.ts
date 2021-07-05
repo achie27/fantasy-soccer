@@ -173,7 +173,7 @@ export const checkUserPassword = async (
 };
 
 export const doesUserExist = async (id: string): Promise<boolean> => {
-  const res = await User.findOne({ id }, { _id: 0, id: 0 });
+  const res = await User.findOne({ id }, { _id: 0, id: 1 });
   if (res) return true;
   return false;
 };

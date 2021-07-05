@@ -38,7 +38,7 @@ export const fetchPlayers = async (
     if (req.query.type) params.type = req.query.type;
     if (req.query.country) params.country = req.query.country;
     if (req.query.teamId) params.teamId = req.query.teamId;
-    if (req.query.uncapped) params.uncapped = req.query.uncapped;
+    if (req.query.uncapped) params.uncapped = req.query.uncapped === 'true';
     if (req.query.firstName) params.firstName = req.query.firstName;
     if (req.query.lastName) params.lastName = req.query.lastName;
     if (req.query.value)

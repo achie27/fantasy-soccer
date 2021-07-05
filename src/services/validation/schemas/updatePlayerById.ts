@@ -1,4 +1,5 @@
 export default {
+  $async: true,
   type: 'object',
   properties: {
     firstName: {
@@ -26,6 +27,7 @@ export default {
       properties: {
         id: {
           type: 'string',
+          validTeamId: true
         },
       },
       required: ['id'],

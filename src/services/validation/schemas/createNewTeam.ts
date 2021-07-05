@@ -21,7 +21,7 @@ export default {
     },
     players: {
       type: 'array',
-      items: [
+      items: 
         {
           type: 'object',
           properties: {
@@ -32,7 +32,7 @@ export default {
           },
           required: ['id'],
         },
-      ],
+
     },
   },
   required: ['name', 'country'],

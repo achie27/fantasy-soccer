@@ -19,7 +19,7 @@ ajv.addKeyword({
   type: 'string',
   schemaType: 'boolean',
   async validate(schema, data) {
-    return await teamModel.doesTeamExist(data.str);
+    return await teamModel.doesTeamExist(data);
   },
 });
 
@@ -49,6 +49,7 @@ ajv.addKeyword({
   type: 'string',
   schemaType: 'boolean',
   async validate(schema, data) {
+    console.log(data)
     return await playerModel.doesPlayerExist(data);
   },
 });

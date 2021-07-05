@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { TeamNotFound, TransferNotFound } from '../lib/exceptions';
+import { InvalidTransferRequest, TeamNotFound, TransferNotFound } from '../lib/exceptions';
 import { teamService, transferService, utilityService } from '../services';
 
 export const createNewTransfer = async (
@@ -19,7 +19,7 @@ export const createNewTransfer = async (
     };
 
     const createdTransfer = await transferService.createTransfer(transfer);
-    return res.status(200).json({ data: { teamId: createdTransfer.id } });
+    return res.status(200).json({ data: { transferId: createdTransfer.id } });
   } catch (e) {
     next(e);
   }
@@ -51,7 +51,8 @@ export const buyPlayerNow = async (
       id: req.params.transferId,
     });
     if (!transfer) throw new TransferNotFound(req.params.transferId);
-
+    if (transfer.initiatorTeam.id === toTeam.id) throw new InvalidTransferRequest('Cannot transfer into the same team');
+    
     await transferService.settleTransfer(transfer, toTeam);
 
     return res.status(200).json({});

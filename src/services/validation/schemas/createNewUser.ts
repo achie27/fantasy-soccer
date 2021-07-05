@@ -18,7 +18,7 @@ export default {
     },
     roles: {
       type: 'array',
-      items: [
+      items:
         {
           type: 'object',
           properties: {
@@ -26,7 +26,6 @@ export default {
           },
           required: ['name'],
         },
-      ],
     },
   },
   required: ['email', 'auth'],
