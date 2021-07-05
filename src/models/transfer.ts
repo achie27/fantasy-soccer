@@ -310,3 +310,23 @@ export const doesTransferExist = async (id: string): Promise<boolean> => {
   if (res) return true;
   return false;
 };
+
+export const closeTransfer = async (
+  id: string,
+  toTeam: {
+    id: string;
+  }
+): Promise<void> => {
+  try {
+    const res = await Transfer.updateOne(
+      {
+        id,
+      },
+      { $set: { status: 'COMPLETE', completedDate: new Date(), toTeam } }
+    );
+    if (res.n === 0) throw new TransferNotFound(id);
+  } catch (e) {
+    logger.error(e);
+    throw new InternalServerError();
+  }
+};

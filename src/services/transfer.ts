@@ -5,6 +5,7 @@ import {
   TransferNotOpen,
   PlayerNotFound,
   InvalidTransferRequest,
+  InvalidInput,
 } from '../lib/exceptions';
 
 import { playerService, teamService, utilityService } from '../services';
@@ -15,10 +16,17 @@ export const createTransfer = async (params) => {
 
   const player = await playerService.fetchPlayerById({
     id: transfer.player.id,
-    ownerId: transfer.initiatorTeam?.ownerId,
   });
   if (!player) {
     throw new PlayerNotFound(transfer.player.id);
+  }
+
+  if (!player.team?.id) {
+    throw new InvalidInput('The player is uncapped and not in the team');
+  }
+
+  if (player.team.id !== transfer.initiatorTeam.id) {
+    throw new InadequatePermissions();
   }
 
   const pendingTransfers = await transferModel.fetchTransfers(
@@ -54,12 +62,12 @@ export const fetchTransferById = async ({
 };
 
 export const settleTransfer = async (transfer, toTeam) => {
-  if (transfer.buyNowPrice > toTeam.budget) {
-    throw new InadequateBudget(toTeam.id);
-  }
-
   if (transfer.status !== 'OPEN') {
     throw new TransferNotOpen(transfer.id);
+  }
+
+  if (transfer.buyNowPrice > toTeam.budget) {
+    throw new InadequateBudget(toTeam.id);
   }
 
   const player = await playerService.fetchPlayerById({
@@ -80,6 +88,7 @@ export const settleTransfer = async (transfer, toTeam) => {
       transfer.buyNowPrice
     ),
     teamService.incrementTeamBudgetById(toTeam.id, -transfer.buyNowPrice),
+    transferModel.closeTransfer(transfer.id, toTeam),
   ]);
 };
 
@@ -116,7 +125,7 @@ export const fetchTransfers = async (params, options) => {
 
 export const updateTransferById = async (params, updatedFields) => {
   const transfer = await transferModel.fetchTransferById(params);
-  if (!transfer) throw new InadequatePermissions();
+  if (!transfer) throw new TransferNotOpen(params.id);
   if (transfer.status !== 'OPEN') throw new TransferNotOpen(transfer.id);
 
   if (updatedFields.player?.id) {

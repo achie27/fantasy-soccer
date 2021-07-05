@@ -85,12 +85,10 @@ export const getUser = async (
     email: IUser['email'];
   }>
 ): Promise<SanitisedUser> => {
-  try {
-    return sanitiseDoc(await User.findOne(details));
-  } catch (e) {
-    logger.error(e);
-    throw new InternalServerError();
-  }
+  const user = await User.findOne(details);
+  if (!user) throw new UserNotFound(details.id || details.email);
+
+  return sanitiseDoc(user);
 };
 
 export const updateUserById = async (

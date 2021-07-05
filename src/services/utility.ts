@@ -82,7 +82,7 @@ export const generateRandomName = (type: 'first' | 'last' | 'full') => {
 };
 
 export const getRandomCountry = () => {
-  return countries[getRandInt(0, countries.length)].name;
+  return countries[getRandInt(0, countries.length - 1)].name;
 };
 
 export const hash = async (text: string): Promise<string> => {

@@ -165,11 +165,16 @@ export const updateTeamById = async (params, updatedFields) => {
 };
 
 export const deleteTeam = async (team) => {
+  const [teamToDel] = await teamModel.fetchTeams(
+    { id: team.id },
+    { skip: 0, limit: 1 }
+  );
+
   await Promise.all([
     transferModel.deleteOpenTransfersOfTeamById(team.id),
     userModel.removeTeamFromUserById(team.owner.id, team.id),
     Promise.all(
-      team.players.map(async (p) => {
+      teamToDel.players.map(async (p) => {
         await playerModel.updatePlayer({ id: p.id }, { team: null });
       })
     ),

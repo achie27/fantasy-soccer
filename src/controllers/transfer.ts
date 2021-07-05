@@ -1,11 +1,17 @@
 import express from 'express';
 
 import {
+  InadequatePermissions,
   InvalidTransferRequest,
   TeamNotFound,
   TransferNotFound,
 } from '../lib/exceptions';
-import { teamService, transferService, utilityService } from '../services';
+import {
+  playerService,
+  teamService,
+  transferService,
+  utilityService,
+} from '../services';
 
 export const createNewTransfer = async (
   req: express.Request & { context: Record<string, any> },
@@ -21,6 +27,16 @@ export const createNewTransfer = async (
       },
       buyNowPrice: req.body.buyNowPrice,
     };
+
+    if (!req.context.user.roles.map((r) => r.name).includes('ADMIN')) {
+      const player = await playerService.fetchPlayerById({
+        id: transfer.player.id,
+        ownerId: transfer.initiatorTeam.ownerId,
+      });
+      if (!player) {
+        throw new InadequatePermissions();
+      }
+    }
 
     const createdTransfer = await transferService.createTransfer(transfer);
     return res.status(200).json({ data: { transferId: createdTransfer.id } });
@@ -40,6 +56,7 @@ export const buyPlayerNow = async (
      * 1. Remove from og team, update the team's value, update the team's budget
      * 2. Add to the new team, update the team's value, update the team's budget
      * 3. Update the player's value and team
+     * 4. Mark the transger settled
      */
 
     const teamFetchParams: Record<string, any> = { id: req.body.team.id };
@@ -74,6 +91,7 @@ export const fetchTransfers = async (
   try {
     const params: Record<string, any> = {};
     if (req.query.id) params.id = req.query.id;
+    if (req.query.status) params.status = req.query.status;
     if (req.query.playerId) params.playerId = req.query.playerId;
     if (req.query.playerTeamName)
       params.playerTeamName = req.query.playerTeamName;

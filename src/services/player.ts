@@ -113,16 +113,20 @@ export const updatePlayer = async (params, updatedFields) => {
       { id: modelParams.id },
       { skip: 0, limit: 1 }
     );
-    const [oldTeam] = await teamModel.fetchTeams(
-      { id: player.team.id },
-      { skip: 0, limit: 1 }
-    );
+
+    if (player.team?.id) {
+      const [oldTeam] = await teamModel.fetchTeams(
+        { id: player.team.id },
+        { skip: 0, limit: 1 }
+      );
+      await teamModel.removePlayerFromTeam(oldTeam.id, player);
+    }
+
     const [newTeam] = await teamModel.fetchTeams(
       { id: updates.team.id },
       { skip: 0, limit: 1 }
     );
 
-    await teamModel.removePlayerFromTeam(oldTeam.id, player);
     player.value = updates.value || player.value;
     await teamModel.addPlayerToTeam(newTeam.id, player);
 
