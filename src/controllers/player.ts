@@ -54,8 +54,8 @@ export const fetchPlayers = async (
       params.ownerId = req.context.user.id;
 
     const players = await playerService.fetchPlayers(params, {
-      skip: req.query.skip || 0,
-      limit: req.query.limit || 100,
+      skip: Number(req.query.skip) || 0,
+      limit: Number(req.query.limit) || 100,
     });
     return res.status(200).json({ data: players });
   } catch (e) {

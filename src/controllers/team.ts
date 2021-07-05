@@ -61,8 +61,8 @@ export const fetchTeams = async (
       params.ownerId = req.context.user.id;
 
     const teams = await teamService.fetchTeams(params, {
-      skip: req.query.skip || 0,
-      limit: req.query.limit || 100,
+      skip: Number(req.query.skip) || 0,
+      limit: Number(req.query.limit) || 100,
     });
     return res.status(200).json({ data: teams });
   } catch (e) {

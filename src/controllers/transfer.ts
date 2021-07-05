@@ -90,8 +90,8 @@ export const fetchTransfers = async (
       );
 
     const transfers = await transferService.fetchTransfers(params, {
-      skip: req.query.skip || 0,
-      limit: req.query.limit || 100,
+      skip: Number(req.query.skip) || 0,
+      limit: Number(req.query.limit) || 100,
     });
     return res.status(200).json({ data: transfers });
   } catch (e) {
