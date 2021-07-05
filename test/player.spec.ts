@@ -54,182 +54,176 @@ describe('Player controllers >', () => {
   });
 
   describe('createNewPlayer >', () => {
-    describe('when requested to', () => {
-      it('should call the Player service with correct params', async () => {
-        const res = mockResponse();
+    it('should call the Player service with correct params', async () => {
+      const res = mockResponse();
 
-        let error;
-        await playerController.createNewPlayer(
-          mockRequest(
-            {
-              firstName: 'random1',
-              lastName: 'random2',
-              type: 'random3',
-              country: 'random4',
-              birthdate: 'random5',
+      let error;
+      await playerController.createNewPlayer(
+        mockRequest(
+          {
+            firstName: 'random1',
+            lastName: 'random2',
+            type: 'random3',
+            country: 'random4',
+            birthdate: 'random5',
+          },
+          {},
+          {},
+          {
+            user: {
+              id: 'random0',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {},
-            {
-              user: {
-                id: 'random0',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        const playerToBeInserted = createPlayerStub.getCall(0).args[0];
+      const playerToBeInserted = createPlayerStub.getCall(0).args[0];
 
-        assert.equal(playerToBeInserted.firstName, 'random1');
-        assert.equal(playerToBeInserted.lastName, 'random2');
-        assert.equal(playerToBeInserted.type, 'random3');
-        assert.equal(playerToBeInserted.country, 'random4');
-        assert.equal(playerToBeInserted.birthdate, 'random5');
-        assert.isUndefined(playerToBeInserted.team?.id);
-      });
+      assert.equal(playerToBeInserted.firstName, 'random1');
+      assert.equal(playerToBeInserted.lastName, 'random2');
+      assert.equal(playerToBeInserted.type, 'random3');
+      assert.equal(playerToBeInserted.country, 'random4');
+      assert.equal(playerToBeInserted.birthdate, 'random5');
+      assert.isUndefined(playerToBeInserted.team?.id);
+    });
 
-      it('should return the correct response', async () => {
-        const res = mockResponse();
+    it('should return the correct response', async () => {
+      const res = mockResponse();
 
-        let error;
-        await playerController.createNewPlayer(
-          mockRequest(
-            {
-              firstName: 'random1',
-              lastName: 'random2',
-              type: 'random3',
-              country: 'random4',
-              birthdate: 'random5',
+      let error;
+      await playerController.createNewPlayer(
+        mockRequest(
+          {
+            firstName: 'random1',
+            lastName: 'random2',
+            type: 'random3',
+            country: 'random4',
+            birthdate: 'random5',
+          },
+          {},
+          {},
+          {
+            user: {
+              id: 'random0',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {},
-            {
-              user: {
-                id: 'random0',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
-        assert.equal(res.status.getCall(0).args[0], 200);
-        assert.equal(res.json.getCall(0).args[0].data.playerId, 'random');
-      });
+      assert.isUndefined(error);
+      assert.equal(res.status.getCall(0).args[0], 200);
+      assert.equal(res.json.getCall(0).args[0].data.playerId, 'random');
     });
   });
 
   describe('fetchPlayerById', () => {
-    describe('when requested to', () => {
-      it('should call the Player fetching service with correct params', async () => {
-        const res = mockResponse();
-        let error;
-        await playerController.fetchPlayerById(
-          mockRequest(
-            {},
-            {
-              playerId: 'random1',
+    it('should call the Player fetching service with correct params', async () => {
+      const res = mockResponse();
+      let error;
+      await playerController.fetchPlayerById(
+        mockRequest(
+          {},
+          {
+            playerId: 'random1',
+          },
+          {},
+          {
+            user: {
+              id: 'random2',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {
-              user: {
-                id: 'random2',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        const [params] = fetchPlayerByIdStub.getCall(0).args;
-        assert.equal(params.id, 'random1');
-        assert.equal(params.ownerId, 'random2');
-      });
+      const [params] = fetchPlayerByIdStub.getCall(0).args;
+      assert.equal(params.id, 'random1');
+      assert.equal(params.ownerId, 'random2');
+    });
 
-      it('should return the correct response', async () => {
-        const res = mockResponse();
-        let error;
-        await playerController.fetchPlayerById(
-          mockRequest(
-            {},
-            {
-              playerId: 'random1',
+    it('should return the correct response', async () => {
+      const res = mockResponse();
+      let error;
+      await playerController.fetchPlayerById(
+        mockRequest(
+          {},
+          {
+            playerId: 'random1',
+          },
+          {},
+          {
+            user: {
+              id: 'random2',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {
-              user: {
-                id: 'random2',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        assert.equal(res.status.getCall(0).args[0], 200);
-        assert.equal(res.json.getCall(0).args[0].data.id, 'random');
-      });
+      assert.equal(res.status.getCall(0).args[0], 200);
+      assert.equal(res.json.getCall(0).args[0].data.id, 'random');
     });
   });
 
   describe('deletePlayer', () => {
-    describe('when requested to', () => {
-      it('should call the Player deleting service with correct params', async () => {
-        const res = mockResponse();
-        let error;
-        await playerController.deletePlayerById(
-          mockRequest(
-            {},
-            {
-              playerId: 'random1',
-            },
-            {},
-            {}
-          ),
-          res,
-          (e) => (error = e)
-        );
+    it('should call the Player deleting service with correct params', async () => {
+      const res = mockResponse();
+      let error;
+      await playerController.deletePlayerById(
+        mockRequest(
+          {},
+          {
+            playerId: 'random1',
+          },
+          {},
+          {}
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        const [params] = deletePlayerStub.getCall(0).args;
-        assert.equal(params.id, 'random');
-      });
+      const [params] = deletePlayerStub.getCall(0).args;
+      assert.equal(params.id, 'random');
+    });
 
-      it('should return the correct response', async () => {
-        const res = mockResponse();
-        let error;
-        await playerController.deletePlayerById(
-          mockRequest(
-            {},
-            {
-              playerId: 'random1',
-            },
-            {},
-            {}
-          ),
-          res,
-          (e) => (error = e)
-        );
+    it('should return the correct response', async () => {
+      const res = mockResponse();
+      let error;
+      await playerController.deletePlayerById(
+        mockRequest(
+          {},
+          {
+            playerId: 'random1',
+          },
+          {},
+          {}
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        assert.equal(res.status.getCall(0).args[0], 200);
-        assert.isUndefined(res.json.getCall(0).args[0].data);
-      });
+      assert.equal(res.status.getCall(0).args[0], 200);
+      assert.isUndefined(res.json.getCall(0).args[0].data);
     });
   });
 });

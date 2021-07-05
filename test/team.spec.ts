@@ -54,174 +54,168 @@ describe('Team controllers >', () => {
   });
 
   describe('createNewTeam >', () => {
-    describe('when requested to', () => {
-      it('should call the team service with correct params', async () => {
-        const res = mockResponse();
+    it('should call the team service with correct params', async () => {
+      const res = mockResponse();
 
-        let error;
-        await teamController.createNewTeam(
-          mockRequest(
-            {
-              name: 'random1',
-              country: 'random2',
+      let error;
+      await teamController.createNewTeam(
+        mockRequest(
+          {
+            name: 'random1',
+            country: 'random2',
+          },
+          {},
+          {},
+          {
+            user: {
+              id: 'random3',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {},
-            {
-              user: {
-                id: 'random3',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        const teamToBeInserted = createTeamStub.getCall(0).args[0];
+      const teamToBeInserted = createTeamStub.getCall(0).args[0];
 
-        assert.equal(teamToBeInserted.name, 'random1');
-        assert.equal(teamToBeInserted.country, 'random2');
-        assert.equal(teamToBeInserted.owner?.id, 'random3');
-        assert.isUndefined(teamToBeInserted.players);
-      });
+      assert.equal(teamToBeInserted.name, 'random1');
+      assert.equal(teamToBeInserted.country, 'random2');
+      assert.equal(teamToBeInserted.owner?.id, 'random3');
+      assert.isUndefined(teamToBeInserted.players);
+    });
 
-      it('should return the correct response', async () => {
-        const res = mockResponse();
+    it('should return the correct response', async () => {
+      const res = mockResponse();
 
-        let error;
-        await teamController.createNewTeam(
-          mockRequest(
-            {
-              name: 'random1',
-              country: 'random2',
+      let error;
+      await teamController.createNewTeam(
+        mockRequest(
+          {
+            name: 'random1',
+            country: 'random2',
+          },
+          {},
+          {},
+          {
+            user: {
+              id: 'random3',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {},
-            {
-              user: {
-                id: 'random3',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
-        assert.equal(res.status.getCall(0).args[0], 200);
-        assert.equal(res.json.getCall(0).args[0].data.teamId, 'random');
-      });
+      assert.isUndefined(error);
+      assert.equal(res.status.getCall(0).args[0], 200);
+      assert.equal(res.json.getCall(0).args[0].data.teamId, 'random');
     });
   });
 
   describe('fetchTeamById', () => {
-    describe('when requested to', () => {
-      it('should call the team fetching service with correct params', async () => {
-        const res = mockResponse();
-        let error;
-        await teamController.fetchTeamById(
-          mockRequest(
-            {},
-            {
-              teamId: 'random1',
+    it('should call the team fetching service with correct params', async () => {
+      const res = mockResponse();
+      let error;
+      await teamController.fetchTeamById(
+        mockRequest(
+          {},
+          {
+            teamId: 'random1',
+          },
+          {},
+          {
+            user: {
+              id: 'random2',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {
-              user: {
-                id: 'random2',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        const [params] = fetchTeamByIdStub.getCall(0).args;
-        assert.equal(params.id, 'random1');
-        assert.equal(params.ownerId, 'random2');
-      });
+      const [params] = fetchTeamByIdStub.getCall(0).args;
+      assert.equal(params.id, 'random1');
+      assert.equal(params.ownerId, 'random2');
+    });
 
-      it('should return the correct response', async () => {
-        const res = mockResponse();
-        let error;
-        await teamController.fetchTeamById(
-          mockRequest(
-            {},
-            {
-              teamId: 'random1',
+    it('should return the correct response', async () => {
+      const res = mockResponse();
+      let error;
+      await teamController.fetchTeamById(
+        mockRequest(
+          {},
+          {
+            teamId: 'random1',
+          },
+          {},
+          {
+            user: {
+              id: 'random2',
+              roles: [{ name: 'REGULAR' }],
             },
-            {},
-            {
-              user: {
-                id: 'random2',
-                roles: [{ name: 'REGULAR' }],
-              },
-            }
-          ),
-          res,
-          (e) => (error = e)
-        );
+          }
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        assert.equal(res.status.getCall(0).args[0], 200);
-        assert.equal(res.json.getCall(0).args[0].data.id, 'random');
-      });
+      assert.equal(res.status.getCall(0).args[0], 200);
+      assert.equal(res.json.getCall(0).args[0].data.id, 'random');
     });
   });
 
   describe('deleteTeam', () => {
-    describe('when requested to', () => {
-      it('should call the team deleting service with correct params', async () => {
-        const res = mockResponse();
-        let error;
-        await teamController.deleteTeamById(
-          mockRequest(
-            {},
-            {
-              teamId: 'random1',
-            },
-            {},
-            {}
-          ),
-          res,
-          (e) => (error = e)
-        );
+    it('should call the team deleting service with correct params', async () => {
+      const res = mockResponse();
+      let error;
+      await teamController.deleteTeamById(
+        mockRequest(
+          {},
+          {
+            teamId: 'random1',
+          },
+          {},
+          {}
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        const [params] = deleteTeamStub.getCall(0).args;
-        assert.equal(params.id, 'random');
-      });
+      const [params] = deleteTeamStub.getCall(0).args;
+      assert.equal(params.id, 'random');
+    });
 
-      it('should return the correct response', async () => {
-        const res = mockResponse();
-        let error;
-        await teamController.deleteTeamById(
-          mockRequest(
-            {},
-            {
-              teamId: 'random1',
-            },
-            {},
-            {}
-          ),
-          res,
-          (e) => (error = e)
-        );
+    it('should return the correct response', async () => {
+      const res = mockResponse();
+      let error;
+      await teamController.deleteTeamById(
+        mockRequest(
+          {},
+          {
+            teamId: 'random1',
+          },
+          {},
+          {}
+        ),
+        res,
+        (e) => (error = e)
+      );
 
-        assert.isUndefined(error);
+      assert.isUndefined(error);
 
-        assert.equal(res.status.getCall(0).args[0], 200);
-        assert.isUndefined(res.json.getCall(0).args[0].data);
-      });
+      assert.equal(res.status.getCall(0).args[0], 200);
+      assert.isUndefined(res.json.getCall(0).args[0].data);
     });
   });
 });
