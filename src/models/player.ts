@@ -155,7 +155,7 @@ export const fetchPlayers = async (params: {
       if (p.team.id) {
         p['team.id'] = p.team.id;
       }
-  
+
       if (p.team.ownerId) {
         p['team.ownerId'] = p.team.ownerId;
       }
@@ -170,9 +170,7 @@ export const fetchPlayers = async (params: {
   }
 };
 
-export const doesPlayerExist = async (
-  id: string,
-): Promise<boolean> => {
+export const doesPlayerExist = async (id: string): Promise<boolean> => {
   const res = await Player.findOne({ id }, { _id: 0, id: 0 });
   if (res) return true;
   return false;

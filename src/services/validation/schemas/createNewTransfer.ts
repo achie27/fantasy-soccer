@@ -7,7 +7,7 @@ export default {
       properties: {
         id: {
           type: 'string',
-          validPlayerId: true
+          validPlayerId: true,
         },
       },
       required: ['id'],
@@ -20,7 +20,7 @@ export default {
       properties: {
         id: {
           type: 'string',
-          validTeamId: true
+          validTeamId: true,
         },
       },
       required: ['id'],

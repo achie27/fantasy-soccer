@@ -11,8 +11,11 @@ export const createNewTransfer = async (
   try {
     const transfer = {
       player: { id: req.body.player.id },
-      initiatorTeam: { id: req.body.initiatorTeam.id, ownerId: req.context.user.id },
-      buyNowPrice: req.body.buyNowPrice
+      initiatorTeam: {
+        id: req.body.initiatorTeam.id,
+        ownerId: req.context.user.id,
+      },
+      buyNowPrice: req.body.buyNowPrice,
     };
 
     const createdTransfer = await transferService.createTransfer(transfer);

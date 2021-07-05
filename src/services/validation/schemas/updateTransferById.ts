@@ -7,7 +7,7 @@ export default {
       properties: {
         id: {
           type: 'string',
-          validPlayerId: true
+          validPlayerId: true,
         },
       },
       required: ['id'],

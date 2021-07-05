@@ -1,5 +1,5 @@
 import Ajv, { ValidateFunction } from 'ajv';
-import addFormats from "ajv-formats"
+import addFormats from 'ajv-formats';
 
 import { InvalidInput } from '../../lib/exceptions';
 import logger from '../../lib/logger';
@@ -58,7 +58,7 @@ ajv.addKeyword({
   type: 'string',
   schemaType: 'boolean',
   validate(schema, data) {
-    return countries.map(c => c.name).includes(data);
+    return countries.map((c) => c.name).includes(data);
   },
 });
 

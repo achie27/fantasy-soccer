@@ -12,7 +12,7 @@ export default {
     },
     country: {
       type: 'string',
-      validCountry: true
+      validCountry: true,
     },
     birthdate: {
       type: 'string',

@@ -108,28 +108,25 @@ export const updateTeamById = async (params, updatedFields) => {
       0
     );
 
-
     const oldPlayerIds = [];
     team.players.forEach((p) => {
       if (newPlayers.findIndex((p2) => p2.id === p.id) === -1)
         oldPlayerIds.push(p.id);
     });
 
-    const oldPlayers = await playerModel.fetchPlayersInBulkByIds(
-      oldPlayerIds
-    );
+    const oldPlayers = await playerModel.fetchPlayersInBulkByIds(oldPlayerIds);
 
     await Promise.all([
       Promise.all(
-        oldPlayers.map(async (p) =>
-          await teamModel.removePlayerFromTeam(team.id, p)
+        oldPlayers.map(
+          async (p) => await teamModel.removePlayerFromTeam(team.id, p)
         )
       ),
       Promise.all(
         oldPlayers.map(async (p) => {
           await playerModel.updatePlayer({ id: p.id }, { team: null });
         })
-      )
+      ),
     ]);
   }
 

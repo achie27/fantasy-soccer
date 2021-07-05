@@ -173,7 +173,10 @@ export const deleteOpenTransfersOfUserById = async (
   userId: string
 ): Promise<void> => {
   try {
-    await Transfer.deleteMany({ 'initiatorTeam.ownerId': userId, status: 'OPEN' });
+    await Transfer.deleteMany({
+      'initiatorTeam.ownerId': userId,
+      status: 'OPEN',
+    });
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
@@ -205,7 +208,9 @@ export const fetchTransfers = async (params: {
             ),
           }),
           ...(params.status && { status: params.status }),
-          ...(params.initiatorTeam?.ownerId && { 'initiatorTeam.ownerId': params.initiatorTeam.ownerId }),
+          ...(params.initiatorTeam?.ownerId && {
+            'initiatorTeam.ownerId': params.initiatorTeam.ownerId,
+          }),
           ...(params.player?.id && { 'player.id': params.player.id }),
         },
       },
@@ -257,10 +262,13 @@ export const updateTransferById = async (
   updates: AtLeastOne<Pick<ITransfer, 'player' | 'buyNowPrice'>>
 ): Promise<void> => {
   try {
-    const res = await Transfer.updateOne({
-      id: params.id,
-      ...(params.ownerId && { 'initiatorTeam.ownerId': params.ownerId })
-    }, { $set: updates });
+    const res = await Transfer.updateOne(
+      {
+        id: params.id,
+        ...(params.ownerId && { 'initiatorTeam.ownerId': params.ownerId }),
+      },
+      { $set: updates }
+    );
     if (res.n === 0) throw new TransferNotFound(params.id);
   } catch (e) {
     logger.error(e);
@@ -277,9 +285,7 @@ export const deleteTransferById = async (id: string): Promise<void> => {
   }
 };
 
-export const doesTransferExist = async (
-  id: string,
-): Promise<boolean> => {
+export const doesTransferExist = async (id: string): Promise<boolean> => {
   const res = await Transfer.findOne({ id }, { _id: 0, id: 0 });
   if (res) return true;
   return false;

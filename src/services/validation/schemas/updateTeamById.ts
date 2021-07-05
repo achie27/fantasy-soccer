@@ -7,7 +7,7 @@ export default {
     },
     country: {
       type: 'string',
-      validCountry: true
+      validCountry: true,
     },
     budget: {
       type: 'number',
@@ -17,7 +17,7 @@ export default {
       properties: {
         id: {
           type: 'string',
-          validUserId: true
+          validUserId: true,
         },
       },
       required: ['id'],
@@ -30,7 +30,7 @@ export default {
           properties: {
             id: {
               type: 'string',
-              validPlayerId: true
+              validPlayerId: true,
             },
           },
           required: ['id'],

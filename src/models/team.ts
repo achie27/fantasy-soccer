@@ -133,7 +133,7 @@ export const fetchTeams = async (params: {
       t.budget = utilityService.convertToMongoCompOperators<number>(
         params.budget
       );
-    
+
     if (t.player?.id) {
       t['player.id'] = t.player.id;
       delete t.player;
@@ -182,9 +182,7 @@ export const incrementTeamBudgetById = async (
   if (!res.n) throw new TeamNotFound(id);
 };
 
-export const doesTeamExist = async (
-  id: string,
-): Promise<boolean> => {
+export const doesTeamExist = async (id: string): Promise<boolean> => {
   const res = await Team.findOne({ id }, { _id: 0, id: 0 });
   if (res) return true;
   return false;

@@ -116,7 +116,7 @@ export const fetchUsers = async (
   try {
     const params = { ...userDetails };
     if (params.roles) {
-      params['roles.name'] = { $in: params.roles.map(p => p.name) };
+      params['roles.name'] = { $in: params.roles.map((p) => p.name) };
     }
     return (await User.find(params)).map(sanitiseDoc);
   } catch (e) {
@@ -172,9 +172,7 @@ export const checkUserPassword = async (
   }
 };
 
-export const doesUserExist = async (
-  id: string,
-): Promise<boolean> => {
+export const doesUserExist = async (id: string): Promise<boolean> => {
   const res = await User.findOne({ id }, { _id: 0, id: 0 });
   if (res) return true;
   return false;
