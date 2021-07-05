@@ -21,10 +21,16 @@ export const createTransfer = async (params) => {
     throw new PlayerNotFound(transfer.player.id);
   }
 
-  const pendingTransfers = await transferModel.fetchTransfers({
-    player: { id: transfer.player.id },
-    status: 'OPEN',
-  });
+  const pendingTransfers = await transferModel.fetchTransfers(
+    {
+      player: { id: transfer.player.id },
+      status: 'OPEN',
+    },
+    {
+      skip: 0,
+      limit: 1,
+    }
+  );
   if (pendingTransfers.length > 0) {
     throw new InvalidTransferRequest(
       `${transfer.player.id} already has pending transfer`
@@ -77,7 +83,7 @@ export const settleTransfer = async (transfer, toTeam) => {
   ]);
 };
 
-export const fetchTransfers = async (params) => {
+export const fetchTransfers = async (params, options) => {
   const modelParams = { ...params, player: {}, initiatorTeam: {} };
 
   if (modelParams.playerId) {
@@ -105,7 +111,7 @@ export const fetchTransfers = async (params) => {
   if (Object.keys(modelParams.initiatorTeam).length === 0)
     delete modelParams.initiatorTeam;
 
-  return await transferModel.fetchTransfers(modelParams);
+  return await transferModel.fetchTransfers(modelParams, options);
 };
 
 export const updateTransferById = async (params, updatedFields) => {

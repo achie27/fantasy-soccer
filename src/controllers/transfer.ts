@@ -89,7 +89,10 @@ export const fetchTransfers = async (
         req.query.buyNowPrice as Record<string, any>
       );
 
-    const transfers = await transferService.fetchTransfers(params);
+    const transfers = await transferService.fetchTransfers(params, {
+      skip: req.query.skip || 0,
+      limit: req.query.limit || 100,
+    });
     return res.status(200).json({ data: transfers });
   } catch (e) {
     next(e);

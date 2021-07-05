@@ -133,23 +133,27 @@ export const updatePlayer = async (
   }
 };
 
-export const fetchPlayers = async (params: {
-  id?: string;
-  type?: string;
-  firstName?: string;
-  lastName?: string;
-  value?: utilityService.ComparisonOperators<number>;
-  country?: string;
-  birthdate?: utilityService.ComparisonOperators<Date>;
-  team?: {
-    id: string;
-    ownerId: string;
-  };
-  uncapped?: boolean;
-}): Promise<SanitisedPlayer[]> => {
+export const fetchPlayers = async (
+  params: {
+    id?: string;
+    type?: string;
+    firstName?: string;
+    lastName?: string;
+    value?: utilityService.ComparisonOperators<number>;
+    country?: string;
+    birthdate?: utilityService.ComparisonOperators<Date>;
+    team?: {
+      id: string;
+      ownerId: string;
+    };
+    uncapped?: boolean;
+  },
+  options: {
+    skip: number;
+    limit: number;
+  }
+): Promise<SanitisedPlayer[]> => {
   try {
-    console.log(params);
-
     const p: Record<string, any> = { ...params };
     if (p.value)
       p.value = utilityService.convertToMongoCompOperators<number>(
@@ -178,7 +182,7 @@ export const fetchPlayers = async (params: {
       delete p['team.ownerId'];
     }
 
-    const players = await Player.find(p);
+    const players = await Player.find(p, null, options).sort({ _id: 1 });
     return players.map(sanitiseDoc);
   } catch (e) {
     logger.error(e);

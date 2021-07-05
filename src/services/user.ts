@@ -29,14 +29,14 @@ export const createUser = async (params: {
   return { ...newUser, teams: [{ id: newTeam.id }] };
 };
 
-export const fetchUsers = async (params) => {
+export const fetchUsers = async (params, options) => {
   const modelParams = { ...params };
   if (modelParams.role) {
     modelParams.roles = [{ name: modelParams.role }];
     delete modelParams.role;
   }
 
-  return await userModel.fetchUsers(modelParams);
+  return await userModel.fetchUsers(modelParams, options);
 };
 
 export const getUser = async (

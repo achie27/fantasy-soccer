@@ -110,19 +110,25 @@ export const removePlayerFromTeam = async (
   if (!res.n) throw new TeamNotFound(id);
 };
 
-export const fetchTeams = async (params: {
-  id?: string;
-  name?: string;
-  budget?: utilityService.ComparisonOperators<number>;
-  value?: utilityService.ComparisonOperators<number>;
-  country?: string;
-  player?: {
-    id: string;
-  };
-  owner?: {
-    id: string;
-  };
-}): Promise<SanitisedTeam[]> => {
+export const fetchTeams = async (
+  params: {
+    id?: string;
+    name?: string;
+    budget?: utilityService.ComparisonOperators<number>;
+    value?: utilityService.ComparisonOperators<number>;
+    country?: string;
+    player?: {
+      id: string;
+    };
+    owner?: {
+      id: string;
+    };
+  },
+  options: {
+    skip: number;
+    limit: number;
+  }
+): Promise<SanitisedTeam[]> => {
   try {
     const t: Record<string, any> = { ...params };
     if (t.value)
@@ -144,7 +150,7 @@ export const fetchTeams = async (params: {
       delete t.owner;
     }
 
-    const teams = await Team.find(t);
+    const teams = await Team.find(t, null, options).sort({ _id: 1 });
     return teams.map(sanitiseDoc);
   } catch (e) {
     logger.error(e);

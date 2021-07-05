@@ -53,7 +53,10 @@ export const fetchPlayers = async (
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.ownerId = req.context.user.id;
 
-    const players = await playerService.fetchPlayers(params);
+    const players = await playerService.fetchPlayers(params, {
+      skip: req.query.skip || 0,
+      limit: req.query.limit || 100,
+    });
     return res.status(200).json({ data: players });
   } catch (e) {
     next(e);

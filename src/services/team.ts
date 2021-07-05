@@ -22,6 +22,13 @@ export const createTeam = async (params) => {
     const players = await playerModel.fetchPlayersInBulkByIds(
       team.players.map((p) => p.id)
     );
+
+    for (const p of players) {
+      if (p.team?.id && p.team?.id !== team.id) {
+        throw new PlayerAlreadyContracted(p.id);
+      }
+    }
+
     team.value = players.reduce((acc, curPlayer) => acc + curPlayer.value, 0);
   } else {
     const players = await playerService.getUncappedPlayers({
@@ -55,7 +62,7 @@ export const createTeam = async (params) => {
   return newTeam;
 };
 
-export const fetchTeams = async (params) => {
+export const fetchTeams = async (params, options) => {
   const modelParams = { ...params };
 
   if (modelParams.playerId) {
@@ -68,7 +75,7 @@ export const fetchTeams = async (params) => {
     delete modelParams.ownerId;
   }
 
-  return await teamModel.fetchTeams(modelParams);
+  return await teamModel.fetchTeams(modelParams, options);
 };
 
 export const fetchTeamById = async (params) => {
@@ -78,7 +85,7 @@ export const fetchTeamById = async (params) => {
   if (params.ownerId) {
     modelParams.owner = { id: params.ownerId };
   }
-  const [team] = await teamModel.fetchTeams(modelParams);
+  const [team] = await teamModel.fetchTeams(modelParams, { skip: 0, limit: 1 });
   return team;
 };
 
@@ -90,7 +97,7 @@ export const updateTeamById = async (params, updatedFields) => {
     delete modelParams.ownerId;
   }
 
-  const [team] = await teamModel.fetchTeams(modelParams);
+  const [team] = await teamModel.fetchTeams(modelParams, { skip: 0, limit: 1 });
   if (!team) throw new TeamNotFound(modelParams.id);
 
   // should either be uncapped or in the same team

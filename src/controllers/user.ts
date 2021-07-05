@@ -43,7 +43,10 @@ export const fetchUsers = async (
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
       params.id = req.context.user.id;
 
-    const users = await userService.fetchUsers(params);
+    const users = await userService.fetchUsers(params, {
+      skip: req.query.skip || 0,
+      limit: req.query.limit || 100,
+    });
     return res.status(200).json({ data: users });
   } catch (e) {
     next(e);

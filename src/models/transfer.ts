@@ -183,20 +183,26 @@ export const deleteOpenTransfersOfUserById = async (
   }
 };
 
-export const fetchTransfers = async (params: {
-  id?: string;
-  buyNowPrice?: utilityService.ComparisonOperators<number>;
-  status?: string;
-  player?: AtLeastOne<{
-    id: string;
-    value: utilityService.ComparisonOperators<number>;
-    country: string;
-  }>;
-  initiatorTeam?: AtLeastOne<{
-    name: string;
-    ownerId: string;
-  }>;
-}): Promise<Array<ExtendedTransfer>> => {
+export const fetchTransfers = async (
+  params: {
+    id?: string;
+    buyNowPrice?: utilityService.ComparisonOperators<number>;
+    status?: string;
+    player?: AtLeastOne<{
+      id: string;
+      value: utilityService.ComparisonOperators<number>;
+      country: string;
+    }>;
+    initiatorTeam?: AtLeastOne<{
+      name: string;
+      ownerId: string;
+    }>;
+  },
+  options: {
+    skip: number;
+    limit: number;
+  }
+): Promise<Array<ExtendedTransfer>> => {
   try {
     const aggPipeline: any[] = [
       {
@@ -238,6 +244,15 @@ export const fetchTransfers = async (params: {
           playerMeta: 0,
         },
       },
+      {
+        $sort: { _id: 1 },
+      },
+      {
+        $skip: options.skip,
+      },
+      {
+        $limit: options.limit,
+      },
     ];
 
     return await Transfer.aggregate(aggPipeline);
@@ -254,7 +269,12 @@ export const fetchTransferById = async ({
   id: string;
   ownerId?: string;
 }): Promise<ExtendedTransfer> => {
-  return (await fetchTransfers({ id, initiatorTeam: { ownerId } }))[0];
+  return (
+    await fetchTransfers(
+      { id, initiatorTeam: { ownerId } },
+      { skip: 0, limit: 1 }
+    )
+  )[0];
 };
 
 export const updateTransferById = async (

@@ -62,14 +62,14 @@ const sanitiseDoc = (user: IUserDocument): SanitisedUser => {
   return toReturn;
 };
 
-export const insert = async (userDetails: {
+export const insert = async (details: {
   email: IUser['email'];
   auth: IUser['auth'];
   roles?: IUser['roles'];
   teams?: IUser['teams'];
 }): Promise<SanitisedUser> => {
   try {
-    const user: IUserDocument = new User({ ...userDetails, id: uuid() });
+    const user: IUserDocument = new User({ ...details, id: uuid() });
     user.auth.password = await utilityService.hash(user.auth.password);
 
     return sanitiseDoc(await user.save());
@@ -80,13 +80,13 @@ export const insert = async (userDetails: {
 };
 
 export const getUser = async (
-  userDetails: utilityService.AtLeastOne<{
+  details: utilityService.AtLeastOne<{
     id: IUser['id'];
     email: IUser['email'];
   }>
 ): Promise<SanitisedUser> => {
   try {
-    return sanitiseDoc(await User.findOne(userDetails));
+    return sanitiseDoc(await User.findOne(details));
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
@@ -107,18 +107,25 @@ export const updateUserById = async (
 };
 
 export const fetchUsers = async (
-  userDetails: utilityService.AtLeastOne<{
+  details: utilityService.AtLeastOne<{
     id: IUser['id'];
     email: IUser['email'];
     roles: IUser['roles'];
-  }>
+  }>,
+  options: {
+    skip: number;
+    limit: number;
+  }
 ): Promise<SanitisedUser[]> => {
   try {
-    const params = { ...userDetails };
+    const params = { ...details };
     if (params.roles) {
       params['roles.name'] = { $in: params.roles.map((p) => p.name) };
     }
-    return (await User.find(params)).map(sanitiseDoc);
+
+    return (await User.find(params, null, options).sort({ _id: 1 })).map(
+      sanitiseDoc
+    );
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();

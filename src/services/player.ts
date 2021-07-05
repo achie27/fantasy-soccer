@@ -30,7 +30,10 @@ export const createPlayer = async (params: {
   };
 
   if (player.team?.id) {
-    const [team] = await teamModel.fetchTeams({ id: player.team.id });
+    const [team] = await teamModel.fetchTeams(
+      { id: player.team.id },
+      { skip: 0, limit: 1 }
+    );
     player.team.ownerId = team.owner.id;
   }
 
@@ -43,7 +46,7 @@ export const createPlayer = async (params: {
   return newPlayer;
 };
 
-export const fetchPlayers = async (params) => {
+export const fetchPlayers = async (params, options) => {
   const modelParams = { ...params };
 
   if (modelParams.teamId) {
@@ -70,7 +73,7 @@ export const fetchPlayers = async (params) => {
     delete modelParams.age;
   }
 
-  return await playerModel.fetchPlayers(modelParams);
+  return await playerModel.fetchPlayers(modelParams, options);
 };
 
 export const fetchPlayerById = async ({
@@ -85,7 +88,10 @@ export const fetchPlayerById = async ({
     params.team = { ownerId };
   }
 
-  const [player] = await playerModel.fetchPlayers(params);
+  const [player] = await playerModel.fetchPlayers(params, {
+    skip: 0,
+    limit: 1,
+  });
   return player;
 };
 
@@ -103,9 +109,18 @@ export const updatePlayer = async (params, updatedFields) => {
   };
 
   if (updates.team?.id || updates.value) {
-    const [player] = await playerModel.fetchPlayers({ id: modelParams.id });
-    const [oldTeam] = await teamModel.fetchTeams({ id: player.team.id });
-    const [newTeam] = await teamModel.fetchTeams({ id: updates.team.id });
+    const [player] = await playerModel.fetchPlayers(
+      { id: modelParams.id },
+      { skip: 0, limit: 1 }
+    );
+    const [oldTeam] = await teamModel.fetchTeams(
+      { id: player.team.id },
+      { skip: 0, limit: 1 }
+    );
+    const [newTeam] = await teamModel.fetchTeams(
+      { id: updates.team.id },
+      { skip: 0, limit: 1 }
+    );
 
     await teamModel.removePlayerFromTeam(oldTeam.id, player);
     player.value = updates.value || player.value;
@@ -129,7 +144,10 @@ export const getUncappedPlayers = async (params) => {
 
   await Promise.all(
     Object.keys(params.type).map(async (type: playerModel.IPlayer['type']) => {
-      const players = await playerModel.fetchPlayers({ type, team: null });
+      const players = await playerModel.fetchPlayers(
+        { type, uncapped: true },
+        { skip: 0, limit: 20 }
+      );
 
       while (players.length < params.type[type]) {
         const newPlayer = await playerModel.insert({
