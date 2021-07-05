@@ -133,14 +133,14 @@ describe('User controllers >', () => {
 
         assert.isUndefined(error);
 
-        const [fetchParams, fetchOptions] = fetchUsersStub.getCall(0).args;
+        const [params, options] = fetchUsersStub.getCall(0).args;
 
-        assert.equal(fetchParams.id, 'random2');
-        assert.equal(fetchParams.role, 'ADMIN');
-        assert.isUndefined(fetchParams.email);
+        assert.equal(params.id, 'random2');
+        assert.equal(params.role, 'ADMIN');
+        assert.isUndefined(params.email);
 
-        assert.equal(fetchOptions.skip, 0);
-        assert.equal(fetchOptions.limit, 100);
+        assert.equal(options.skip, 0);
+        assert.equal(options.limit, 100);
       });
 
       it('should return the correct response', async () => {
@@ -199,8 +199,8 @@ describe('User controllers >', () => {
 
         assert.isUndefined(error);
 
-        const [fetchParams] = getUserStub.getCall(0).args;
-        assert.equal(fetchParams.id, 'random1');
+        const [params] = getUserStub.getCall(0).args;
+        assert.equal(params.id, 'random1');
       });
 
       it('should return the correct response', async () => {
@@ -234,7 +234,7 @@ describe('User controllers >', () => {
 
   describe('deleteUserById', () => {
     describe('when requested to', () => {
-      it('should call the user fetching service with correct params', async () => {
+      it('should call the user deleting service with correct params', async () => {
         const res = mockResponse();
         let error;
         await userController.deleteUserById(

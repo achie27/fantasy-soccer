@@ -1,7 +1,7 @@
 import express from 'express';
 import { TeamNotFound } from '../lib/exceptions';
 
-import { playerService, teamService, utilityService } from '../services';
+import { teamService, utilityService } from '../services';
 
 export const createNewTeam = async (
   req: express.Request & { context: Record<string, any> },
