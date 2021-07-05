@@ -9,7 +9,7 @@ import {
 import logger from '../lib/logger';
 import { utilityService } from '../services';
 
-const userRoles = ['REGULAR', 'ADMIN'] as const;
+export const userRoles = ['REGULAR', 'ADMIN'] as const;
 
 export interface IUser {
   id: string;
@@ -22,8 +22,8 @@ export interface IUser {
 }
 
 const userSchema = new Schema<IUser>({
-  id: { type: String, required: true, index: true },
-  email: { type: String, required: true, index: true },
+  id: { type: String, required: true, index: true, unique: true },
+  email: { type: String, required: true, index: true, unique: true },
   auth: {
     password: { type: String, required: true },
   },

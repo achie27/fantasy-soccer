@@ -1,3 +1,5 @@
+import { userModel } from '../../../models';
+
 export default {
   type: 'object',
   properties: {
@@ -16,13 +18,15 @@ export default {
     },
     roles: {
       type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: 'string',
+      items: [
+        {
+          type: 'object',
+          properties: {
+            name: { type: 'string', enum: userModel.userRoles },
+          },
+          required: ['name'],
         },
-        required: ['name'],
-      },
+      ],
     },
   },
   required: ['email', 'auth'],

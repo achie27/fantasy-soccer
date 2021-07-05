@@ -13,7 +13,11 @@ export const createUser = async (params: {
   auth: userModel.IUser['auth'];
   roles?: userModel.IUser['roles'];
 }) => {
-  const newUser = await userModel.insert(params);
+  const newUser = await userModel.insert({
+    ...params,
+    ...(!params.roles && { roles: [{ name: 'REGULAR' }] }),
+  });
+
   const newTeam = await teamService.createTeam({
     name: `${newUser.id}'s Team`,
     country: utilityService.getRandomCountry(),

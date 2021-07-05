@@ -28,7 +28,7 @@ export interface IPlayer {
 }
 
 const playerSchema = new Schema<IPlayer>({
-  id: { type: String, required: true, index: true },
+  id: { type: String, required: true, index: true, unique: true },
   type: { type: String, enum: playerTypes, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -36,8 +36,8 @@ const playerSchema = new Schema<IPlayer>({
   country: { type: String, required: true },
   birthdate: { type: Date, required: true },
   team: {
-    id: { type: String, required: true },
-    ownerId: { type: String, required: true },
+    id: { type: String },
+    ownerId: { type: String },
   },
 });
 

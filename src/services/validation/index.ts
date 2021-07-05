@@ -21,6 +21,8 @@ export const validate = (
 ) => {
   const isValid = compiledSchemas[schemaType](data);
   if (!isValid) {
-    throw new InvalidInput(compiledSchemas[schemaType].errors[0].message);
+    const err = compiledSchemas[schemaType].errors[0];
+
+    throw new InvalidInput(`${err.dataPath}: ${err.message}`);
   }
 };

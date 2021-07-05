@@ -12,7 +12,7 @@ import { ParameterDeclaration } from 'typescript';
 export const createTeam = async (params) => {
   const team = { ...params };
 
-  const user = await userModel.getUser(team.owner.id);
+  const user = await userModel.getUser({ id: team.owner.id });
   if (user.teams?.length >= maxTeamsLimit) {
     throw new MaxTeamsLimitReached(user.id);
   }
@@ -25,10 +25,10 @@ export const createTeam = async (params) => {
   } else {
     const players = await playerService.getUncappedPlayers({
       type: {
-        goalkeeper: 3,
-        defender: 6,
-        midfielder: 6,
-        attacker: 5,
+        GOALKEEPER: 3,
+        DEFENDER: 6,
+        MIDFIELDER: 6,
+        ATTACKER: 5,
       },
     });
 
@@ -41,7 +41,7 @@ export const createTeam = async (params) => {
   const newTeam = await teamModel.insert(team);
 
   // should be idempotent
-  await userModel.addTeamToUserById(team.owner.id, team.id);
+  await userModel.addTeamToUserById(team.owner.id, newTeam.id);
   await Promise.all(
     team.players.map((p) =>
       playerModel.updatePlayer(

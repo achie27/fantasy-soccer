@@ -21,7 +21,7 @@ export interface ITeam {
 }
 
 const teamSchema = new Schema<ITeam>({
-  id: { type: String, required: true, index: true },
+  id: { type: String, required: true, index: true, unique: true },
   name: { type: String, required: true },
   budget: { type: Number, required: true, default: 0 },
   value: { type: Number, required: true, default: 0 },

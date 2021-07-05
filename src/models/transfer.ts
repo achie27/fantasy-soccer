@@ -27,7 +27,7 @@ export interface ITransfer {
 }
 
 const transferSchema = new Schema<ITransfer>({
-  id: { type: String, required: true, index: true },
+  id: { type: String, required: true, index: true, unique: true },
   player: {
     id: { type: String, required: true, index: true },
   },

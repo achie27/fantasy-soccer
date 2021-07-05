@@ -77,7 +77,8 @@ export const updateUserById = async (
   try {
     if (
       !req.context.user.roles.map((r) => r.name).includes('ADMIN') &&
-      req.params.userId !== req.context.user.id
+      (req.params.userId !== req.context.user.id ||
+        (req.body.roles && req.body.roles.map((r) => r.name).includes('ADMIN')))
     )
       throw new InadequatePermissions();
 

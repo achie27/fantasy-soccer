@@ -18,15 +18,17 @@ export default {
     },
     players: {
       type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
+      items: [
+        {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
           },
+          required: ['id'],
         },
-        required: ['id'],
-      },
+      ],
     },
   },
   required: ['name', 'country'],
