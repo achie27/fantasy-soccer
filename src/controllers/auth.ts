@@ -46,6 +46,7 @@ export const generateNewToken = async (
       .cookie('refresh-token', refreshToken, {
         maxAge: refreshTokenExpiry,
         httpOnly: true,
+        // secure: true,
       })
       .status(200)
       .json({ data: { id: user.id, accessToken } });
