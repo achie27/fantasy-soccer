@@ -11,9 +11,8 @@ export const createNewTransfer = async (
   try {
     const transfer = {
       player: { id: req.body.player.id },
-      initiatorTeam: { id: req.body.initiatorTeam.id },
-      buyNowPrice: req.body.buyNowPrice,
-      createdByUser: req.context.user.id,
+      initiatorTeam: { id: req.body.initiatorTeam.id, ownerId: req.context.user.id },
+      buyNowPrice: req.body.buyNowPrice
     };
 
     const createdTransfer = await transferService.createTransfer(transfer);
@@ -117,7 +116,7 @@ export const updateTransferById = async (
     const toUpdate: Record<string, any> = {};
 
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
-      params.createdByUser = req.context.user.id;
+      params.ownerId = req.context.user.id;
 
     if (req.body.player?.id) toUpdate.player = { id: req.body.player.id };
     if (req.body.buyNowPrice) toUpdate.buyNowPrice = req.body.buyNowPrice;
@@ -144,7 +143,7 @@ export const deleteTransferById = async (
     };
 
     if (!req.context.user.roles.map((r) => r.name).includes('ADMIN'))
-      params.createdByUser = req.context.user.id;
+      params.ownerId = req.context.user.id;
 
     const transfer = await transferService.fetchTransferById(params);
     if (!transfer) throw new TransferNotFound(req.params.transferId);

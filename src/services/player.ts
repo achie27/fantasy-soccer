@@ -90,7 +90,8 @@ export const fetchPlayerById = async ({
     params.team = { ownerId };
   }
 
-  return await playerModel.fetchPlayers(params)[0];
+  const [player] = await playerModel.fetchPlayers(params);
+  return player;
 };
 
 export const updatePlayer = async (params, updatedFields) => {

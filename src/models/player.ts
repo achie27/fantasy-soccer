@@ -151,10 +151,29 @@ export const fetchPlayers = async (params: {
         params.birthdate
       );
 
+    if (p.team) {
+      if (p.team.id) {
+        p['team.id'] = p.team.id;
+      }
+  
+      if (p.team.ownerId) {
+        p['team.ownerId'] = p.team.ownerId;
+      }
+      delete p.team;
+    }
+
     const players = await Player.find(p);
     return players.map(sanitiseDoc);
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
   }
+};
+
+export const doesPlayerExist = async (
+  id: string,
+): Promise<boolean> => {
+  const res = await Player.findOne({ id }, { _id: 0, id: 0 });
+  if (res) return true;
+  return false;
 };

@@ -32,7 +32,7 @@ export const createUser = async (params: {
 export const fetchUsers = async (params) => {
   const modelParams = { ...params };
   if (modelParams.role) {
-    modelParams.roles = { name: modelParams.role };
+    modelParams.roles = [{ name: modelParams.role }];
     delete modelParams.role;
   }
 

@@ -114,7 +114,11 @@ export const fetchUsers = async (
   }>
 ): Promise<SanitisedUser[]> => {
   try {
-    return (await User.find(userDetails)).map(sanitiseDoc);
+    const params = { ...userDetails };
+    if (params.roles) {
+      params['roles.name'] = { $in: params.roles.map(p => p.name) };
+    }
+    return (await User.find(params)).map(sanitiseDoc);
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
@@ -166,4 +170,12 @@ export const checkUserPassword = async (
     logger.error(e);
     throw new InternalServerError();
   }
+};
+
+export const doesUserExist = async (
+  id: string,
+): Promise<boolean> => {
+  const res = await User.findOne({ id }, { _id: 0, id: 0 });
+  if (res) return true;
+  return false;
 };

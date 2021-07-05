@@ -15,9 +15,9 @@ export interface ITransfer {
   };
   initiatorTeam: {
     id: string;
+    ownerId: string;
   };
   buyNowPrice: number;
-  createdByUser: string;
   status: typeof transferStatuses[number];
   openedDate: Date;
   completedDate?: Date;
@@ -33,9 +33,9 @@ const transferSchema = new Schema<ITransfer>({
   },
   initiatorTeam: {
     id: { type: String, required: true, index: true },
+    ownerId: { type: String, required: true, index: true },
   },
   buyNowPrice: { type: Number, required: true },
-  createdByUser: { type: String, required: true },
   status: { type: String, enum: transferStatuses, required: true },
   openedDate: { type: Date, required: true },
   completedDate: { type: Date },
@@ -139,9 +139,9 @@ export const insert = async (transferDetails: {
   };
   initiatorTeam: {
     id: string;
+    ownerId: string;
   };
   buyNowPrice: number;
-  createdByUser: string;
   status: typeof transferStatuses[number];
   openedDate: Date;
 }): Promise<SanitisedTransfer> => {
@@ -173,7 +173,7 @@ export const deleteOpenTransfersOfUserById = async (
   userId: string
 ): Promise<void> => {
   try {
-    await Transfer.deleteMany({ createdByUser: userId, status: 'OPEN' });
+    await Transfer.deleteMany({ 'initiatorTeam.ownerId': userId, status: 'OPEN' });
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
@@ -189,10 +189,10 @@ export const fetchTransfers = async (params: {
     value: utilityService.ComparisonOperators<number>;
     country: string;
   }>;
-  initiatorTeam?: {
+  initiatorTeam?: AtLeastOne<{
     name: string;
-  };
-  createdByUser?: string;
+    ownerId: string;
+  }>;
 }): Promise<Array<ExtendedTransfer>> => {
   try {
     const aggPipeline: any[] = [
@@ -205,7 +205,7 @@ export const fetchTransfers = async (params: {
             ),
           }),
           ...(params.status && { status: params.status }),
-          ...(params.createdByUser && { createdByUser: params.createdByUser }),
+          ...(params.initiatorTeam?.ownerId && { 'initiatorTeam.ownerId': params.initiatorTeam.ownerId }),
           ...(params.player?.id && { 'player.id': params.player.id }),
         },
       },
@@ -244,20 +244,23 @@ export const fetchTransfers = async (params: {
 
 export const fetchTransferById = async ({
   id,
-  createdByUser,
+  ownerId,
 }: {
   id: string;
-  createdByUser?: string;
+  ownerId?: string;
 }): Promise<ExtendedTransfer> => {
-  return await fetchTransfers({ id, createdByUser })[0];
+  return (await fetchTransfers({ id, initiatorTeam: { ownerId } }))[0];
 };
 
 export const updateTransferById = async (
-  params: { id: string; createdByUser?: string },
+  params: { id: string; ownerId?: string },
   updates: AtLeastOne<Pick<ITransfer, 'player' | 'buyNowPrice'>>
 ): Promise<void> => {
   try {
-    const res = await Transfer.updateOne(params as any, { $set: updates });
+    const res = await Transfer.updateOne({
+      id: params.id,
+      ...(params.ownerId && { 'initiatorTeam.ownerId': params.ownerId })
+    }, { $set: updates });
     if (res.n === 0) throw new TransferNotFound(params.id);
   } catch (e) {
     logger.error(e);
@@ -272,4 +275,12 @@ export const deleteTransferById = async (id: string): Promise<void> => {
     logger.error(e);
     throw new InternalServerError();
   }
+};
+
+export const doesTransferExist = async (
+  id: string,
+): Promise<boolean> => {
+  const res = await Transfer.findOne({ id }, { _id: 0, id: 0 });
+  if (res) return true;
+  return false;
 };

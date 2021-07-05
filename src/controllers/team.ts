@@ -18,9 +18,13 @@ export const createNewTeam = async (
       team.players = req.body.players.map((p) => ({ id: p.id }));
 
     if (req.body?.owner?.id) {
-      if (req.context.user.roles.map((r) => r.name).includes('ADMIN'))
+      if (req.context.user.roles.map((r) => r.name).includes('ADMIN')) {
         team.owner = { id: req.body.owner.id };
-      else team.owner = { id: req.context.user.id };
+      } else {
+        team.owner = { id: req.context.user.id };
+      }
+    } else {
+      team.owner = { id: req.context.user.id };
     }
 
     const createdteam = await teamService.createTeam(team);

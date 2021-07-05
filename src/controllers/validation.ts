@@ -11,7 +11,7 @@ export const validateRequestBody = (
     next: express.NextFunction
   ) => {
     try {
-      validationService.validate(schemaType, req.body);
+      await validationService.validate(schemaType, req.body);
       next();
     } catch (e) {
       next(e);

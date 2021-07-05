@@ -12,6 +12,7 @@ export default {
     },
     country: {
       type: 'string',
+      validCountry: true
     },
     birthdate: {
       type: 'string',

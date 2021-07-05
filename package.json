@@ -18,7 +18,7 @@
   "author": "achie27",
   "license": "ISC",
   "dependencies": {
-    "ajv": "^6.12.6",
+    "ajv": "^8.6.1",
     "ajv-formats": "^2.1.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",

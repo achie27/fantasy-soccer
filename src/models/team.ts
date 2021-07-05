@@ -133,6 +133,16 @@ export const fetchTeams = async (params: {
       t.budget = utilityService.convertToMongoCompOperators<number>(
         params.budget
       );
+    
+    if (t.player?.id) {
+      t['player.id'] = t.player.id;
+      delete t.player;
+    }
+
+    if (t.owner?.id) {
+      t['owner.id'] = t.owner.id;
+      delete t.owner;
+    }
 
     const teams = await Team.find(t);
     return teams.map(sanitiseDoc);
@@ -144,7 +154,7 @@ export const fetchTeams = async (params: {
 
 export const updateTeam = async (
   params: { id: string; owner?: { id: string } },
-  updates: AtLeastOne<Omit<ITeam, 'id' | 'value'>>
+  updates: AtLeastOne<Omit<ITeam, 'id'>>
 ): Promise<void> => {
   try {
     const res = await Team.updateOne(params as any, { $set: updates });
@@ -170,4 +180,12 @@ export const incrementTeamBudgetById = async (
 ): Promise<void> => {
   const res = await Team.updateOne({ id }, { $inc: { budget: inc } });
   if (!res.n) throw new TeamNotFound(id);
+};
+
+export const doesTeamExist = async (
+  id: string,
+): Promise<boolean> => {
+  const res = await Team.findOne({ id }, { _id: 0, id: 0 });
+  if (res) return true;
+  return false;
 };

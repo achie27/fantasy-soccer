@@ -77,8 +77,8 @@ export const fetchTeamById = async (params) => {
   if (params.ownerId) {
     modelParams.owner = { id: params.ownerId };
   }
-
-  return await teamModel.fetchTeams(modelParams)[0];
+  const [team] = await teamModel.fetchTeams(modelParams);
+  return team;
 };
 
 export const updateTeamById = async (params, updatedFields) => {
@@ -93,7 +93,7 @@ export const updateTeamById = async (params, updatedFields) => {
 
   // should either be uncapped or in the same team
   if (updatedFields.players) {
-    const newPlayers = await playerModel.fetchPlayers(
+    const newPlayers = await playerModel.fetchPlayersInBulkByIds(
       updatedFields.players.map((p) => p.id)
     );
 
@@ -108,17 +108,29 @@ export const updateTeamById = async (params, updatedFields) => {
       0
     );
 
-    const oldPlayersToRemove = [];
+
+    const oldPlayerIds = [];
     team.players.forEach((p) => {
       if (newPlayers.findIndex((p2) => p2.id === p.id) === -1)
-        oldPlayersToRemove.push(p);
+        oldPlayerIds.push(p.id);
     });
 
-    await Promise.all(
-      oldPlayersToRemove.map((p) =>
-        teamModel.removePlayerFromTeam(team.id, p.id)
-      )
+    const oldPlayers = await playerModel.fetchPlayersInBulkByIds(
+      oldPlayerIds
     );
+
+    await Promise.all([
+      Promise.all(
+        oldPlayers.map(async (p) =>
+          await teamModel.removePlayerFromTeam(team.id, p)
+        )
+      ),
+      Promise.all(
+        oldPlayers.map(async (p) => {
+          await playerModel.updatePlayer({ id: p.id }, { team: null });
+        })
+      )
+    ]);
   }
 
   if (updatedFields.owner?.id) {

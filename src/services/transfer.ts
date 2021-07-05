@@ -19,12 +19,12 @@ export const createTransfer = async (params) => {
 
 export const fetchTransferById = async ({
   id,
-  createdByUser,
+  ownerId,
 }: {
   id: string;
-  createdByUser?: string;
+  ownerId?: string;
 }) => {
-  return await transferModel.fetchTransferById({ id, createdByUser });
+  return await transferModel.fetchTransferById({ id, ownerId });
 };
 
 export const settleTransfer = async (transfer, toTeam) => {
