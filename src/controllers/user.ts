@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { UserNotFound, InadequatePermissions } from '../lib/exceptions';
-import { userService, utilityService } from '../services';
+import { userService } from '../services';
 import { userModel } from '../models';
 
 export const createNewUser = async (
@@ -114,8 +114,8 @@ export const deleteUserById = async (
      * 2. Delete all transfer requests
      * 3. Delete team
      */
-    const deletedUser = await userService.deleteUserById(req.params.userId);
-    return res.status(200).json({ data: deletedUser });
+    await userService.deleteUserById(req.params.userId);
+    return res.status(200).json({});
   } catch (e) {
     next(e);
   }
