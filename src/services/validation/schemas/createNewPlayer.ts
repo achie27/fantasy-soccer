@@ -6,15 +6,15 @@ export default {
   properties: {
     firstName: {
       type: 'string',
-      minLength: 1
+      minLength: 1,
     },
     lastName: {
       type: 'string',
-      minLength: 1
+      minLength: 1,
     },
     type: {
       type: 'string',
-      enum: playerModel.playerTypes
+      enum: playerModel.playerTypes,
     },
     country: {
       type: 'string',

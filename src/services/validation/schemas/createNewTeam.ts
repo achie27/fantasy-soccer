@@ -4,7 +4,7 @@ export default {
   properties: {
     name: {
       type: 'string',
-      minLength: 1
+      minLength: 1,
     },
     country: {
       type: 'string',

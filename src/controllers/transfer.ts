@@ -93,8 +93,10 @@ export const fetchTransfers = async (
     if (req.query.id) params.id = req.query.id;
     if (req.query.status) params.status = req.query.status;
     if (req.query.playerId) params.playerId = req.query.playerId;
-    if (req.query.playerFirstName) params.playerFirstName = req.query.playerFirstName;
-    if (req.query.playerLastName) params.playerLastName = req.query.playerLastName;
+    if (req.query.playerFirstName)
+      params.playerFirstName = req.query.playerFirstName;
+    if (req.query.playerLastName)
+      params.playerLastName = req.query.playerLastName;
     if (req.query.playerTeamName)
       params.playerTeamName = req.query.playerTeamName;
     if (req.query.playerCountry) params.playerCountry = req.query.playerCountry;
@@ -103,10 +105,10 @@ export const fetchTransfers = async (
       params.playerValue = utilityService.extractComparisonOperators(
         req.query.playerValue as Record<string, any>
       );
-      
-      Object.keys(params.playerValue).forEach(k => {
+
+      Object.keys(params.playerValue).forEach((k) => {
         params.playerValue[k] = Number(params.playerValue[k]);
-      })
+      });
     }
 
     if (req.query.buyNowPrice) {
@@ -114,9 +116,9 @@ export const fetchTransfers = async (
         req.query.buyNowPrice as Record<string, any>
       );
 
-      Object.keys(params.buyNowPrice).forEach(k => {
+      Object.keys(params.buyNowPrice).forEach((k) => {
         params.buyNowPrice[k] = Number(params.buyNowPrice[k]);
-      })
+      });
     }
 
     const transfers = await transferService.fetchTransfers(params, {

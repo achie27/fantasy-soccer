@@ -12,7 +12,7 @@ export default {
     },
     type: {
       type: 'string',
-      enum: playerModel.playerTypes
+      enum: playerModel.playerTypes,
     },
     country: {
       type: 'string',

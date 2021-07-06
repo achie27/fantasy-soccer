@@ -180,7 +180,10 @@ export const updateTeamById = async (params, updatedFields) => {
           );
         })
       ),
-      transferModel.updateOpenTransfersOfTeamById(team.id, updatedFields.owner.id)
+      transferModel.updateOpenTransfersOfTeamById(
+        team.id,
+        updatedFields.owner.id
+      ),
     ]);
   }
 

@@ -85,7 +85,7 @@ const metaDetailsJoinPipeline = [
             value: 1,
             country: 1,
             firstName: 1,
-            lastName: 1
+            lastName: 1,
           },
         },
       ],
@@ -185,7 +185,6 @@ export const deleteOpenTransfersOfUserById = async (
   }
 };
 
-
 export const deleteOpenTransferOfPlayerById = async (
   playerId: string
 ): Promise<void> => {
@@ -200,24 +199,25 @@ export const deleteOpenTransferOfPlayerById = async (
   }
 };
 
-
 export const updateOpenTransfersOfTeamById = async (
   teamId: string,
   ownerId: string
 ): Promise<void> => {
   try {
-    await Transfer.updateMany({
-      'initiatorTeam.id': teamId,
-      status: 'OPEN',
-    }, {
-      $set: { 'initiatorTeam.ownerId': ownerId }
-    });
+    await Transfer.updateMany(
+      {
+        'initiatorTeam.id': teamId,
+        status: 'OPEN',
+      },
+      {
+        $set: { 'initiatorTeam.ownerId': ownerId },
+      }
+    );
   } catch (e) {
     logger.error(e);
     throw new InternalServerError();
   }
 };
-
 
 export const fetchTransfers = async (
   params: {
@@ -229,7 +229,7 @@ export const fetchTransfers = async (
       value: utilityService.ComparisonOperators<number>;
       country: string;
       firstName: string;
-      lastName: string
+      lastName: string;
     }>;
     initiatorTeam?: AtLeastOne<{
       name: string;

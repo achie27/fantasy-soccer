@@ -130,7 +130,7 @@ export const updatePlayer = async (params, updatedFields) => {
 
     await Promise.all([
       teamModel.addPlayerToTeam(newTeam.id, player),
-      transferModel.deleteOpenTransferOfPlayerById(player.id)
+      transferModel.deleteOpenTransferOfPlayerById(player.id),
     ]);
 
     updates.team = { id: newTeam.id, ownerId: newTeam.owner.id };
