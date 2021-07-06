@@ -74,7 +74,7 @@ describe('Transfer controllers >', () => {
           {
             user: {
               id: 'random0',
-              roles: [{ name: 'REGULAR' }],
+              roles: [{ name: 'ADMIN' }],
             },
           }
         ),
@@ -112,7 +112,7 @@ describe('Transfer controllers >', () => {
           {
             user: {
               id: 'random0',
-              roles: [{ name: 'REGULAR' }],
+              roles: [{ name: 'ADMIN' }],
             },
           }
         ),
