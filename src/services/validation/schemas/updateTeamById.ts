@@ -11,6 +11,7 @@ export default {
     },
     budget: {
       type: 'number',
+      minimum: 0
     },
     owner: {
       type: 'object',

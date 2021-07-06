@@ -36,8 +36,4 @@ teamRouter.delete(
   teamController.deleteTeamById
 );
 
-teamRouter.use('*', (_, res) => {
-  return res.status(405).end();
-});
-
 export default teamRouter;

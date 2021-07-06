@@ -1,5 +1,5 @@
 import express from 'express';
-import { TeamNotFound } from '../lib/exceptions';
+import { TeamNotFound, NothingToUpdate } from '../lib/exceptions';
 
 import { teamService, utilityService } from '../services';
 
@@ -110,6 +110,8 @@ export const updateTeamById = async (
     } else {
       params.ownerId = req.context.user.id;
     }
+
+    if (Object.keys(toUpdate).length === 0) throw new NothingToUpdate();
 
     const updatedTeam = await teamService.updateTeamById(params, toUpdate);
     return res.status(200).json({ data: updatedTeam });

@@ -36,8 +36,4 @@ playerRouter.delete(
   playerController.deletePlayerById
 );
 
-playerRouter.use('*', (_, res) => {
-  return res.status(405).end();
-});
-
 export default playerRouter;

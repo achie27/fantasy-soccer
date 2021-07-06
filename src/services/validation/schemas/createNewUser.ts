@@ -7,14 +7,8 @@ export default {
       type: 'string',
       format: 'email',
     },
-    auth: {
-      type: 'object',
-      properties: {
-        password: {
-          type: 'string',
-        },
-      },
-      required: ['password'],
+    password: {
+      type: 'string',
     },
     roles: {
       type: 'array',
@@ -27,5 +21,5 @@ export default {
       },
     },
   },
-  required: ['email', 'auth'],
+  required: ['email', 'password'],
 };

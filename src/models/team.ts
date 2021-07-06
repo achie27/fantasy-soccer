@@ -141,7 +141,7 @@ export const fetchTeams = async (
       );
 
     if (t.player?.id) {
-      t['player.id'] = t.player.id;
+      t['players.id'] = t.player.id;
       delete t.player;
     }
 
@@ -162,13 +162,9 @@ export const updateTeam = async (
   params: { id: string; owner?: { id: string } },
   updates: AtLeastOne<Omit<ITeam, 'id'>>
 ): Promise<void> => {
-  try {
-    const res = await Team.updateOne(params as any, { $set: updates });
-    if (res.n === 0) throw new TeamNotFound(params.id);
-  } catch (e) {
-    logger.error(e);
-    throw new InternalServerError();
-  }
+  const res = await Team.updateOne(params as any, { $set: updates });
+  if (res.n === 0) throw new TeamNotFound(params.id);
+
 };
 
 export const deleteTeam = async (id: string): Promise<void> => {

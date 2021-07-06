@@ -36,8 +36,4 @@ userRouter.delete(
   userController.deleteUserById
 );
 
-userRouter.use('*', (_, res) => {
-  return res.status(405).end();
-});
-
 export default userRouter;

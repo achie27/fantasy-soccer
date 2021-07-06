@@ -42,8 +42,4 @@ transferRouter.delete(
   transferController.deleteTransferById
 );
 
-transferRouter.use('*', (_, res) => {
-  return res.status(405).end();
-});
-
 export default transferRouter;

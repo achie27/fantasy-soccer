@@ -96,6 +96,11 @@ export const updateUserById = async (
   toUpdate: utilityService.AtLeastOne<Omit<IUser, 'id'>>
 ): Promise<void> => {
   try {
+
+    if (toUpdate.auth?.password) {
+      toUpdate.auth.password = await utilityService.hash(toUpdate.auth.password);
+    }
+
     const res = await User.updateOne({ id }, { $set: toUpdate });
     if (res.n === 0) throw new UserNotFound(id);
   } catch (e) {
@@ -167,14 +172,9 @@ export const checkUserPassword = async (
   id: IUser['id'],
   password: string
 ): Promise<void> => {
-  try {
-    const user = await User.findOne({ id }, { 'auth.password': 1, _id: 0 });
-    if (!(await utilityService.compareWithHash(password, user.auth.password)))
-      throw new IncorrectPassword();
-  } catch (e) {
-    logger.error(e);
-    throw new InternalServerError();
-  }
+  const user = await User.findOne({ id }, { 'auth.password': 1, _id: 0 });
+  if (!(await utilityService.compareWithHash(password, user.auth.password)))
+    throw new IncorrectPassword();
 };
 
 export const doesUserExist = async (id: string): Promise<boolean> => {

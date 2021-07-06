@@ -1,5 +1,5 @@
 import {
-  PlayerNotFound,
+  InadequateBudget,
   PlayerAlreadyContracted,
   MaxTeamsLimitReached,
   TeamNotFound,
@@ -102,25 +102,38 @@ export const updateTeamById = async (params, updatedFields) => {
 
   // should either be uncapped or in the same team
   if (updatedFields.players) {
-    const newPlayers = await playerModel.fetchPlayersInBulkByIds(
+    const updatedRoster = await playerModel.fetchPlayersInBulkByIds(
       updatedFields.players.map((p) => p.id)
     );
 
-    for (const p of newPlayers) {
+    let newRecruitContractExpense = 0;
+    for (const p of updatedRoster) {
       if (p.team?.id && p.team?.id !== team.id) {
         throw new PlayerAlreadyContracted(p.id);
       }
+
+      // contract if uncapped
+      if (!p.team?.id) {
+        newRecruitContractExpense += p.value;
+      }
     }
 
-    updatedFields.value = newPlayers.reduce(
+    if (newRecruitContractExpense > (updatedFields.budget || team.budget)) {
+      throw new InadequateBudget(team.id);
+    } else {
+      updatedFields.budget = (updatedFields.budget || team.budget) - newRecruitContractExpense;
+    }
+
+    updatedFields.value = updatedRoster.reduce(
       (acc, curPlayer) => acc + curPlayer.value,
       0
     );
 
     const oldPlayerIds = [];
     team.players.forEach((p) => {
-      if (newPlayers.findIndex((p2) => p2.id === p.id) === -1)
+      if (updatedRoster.findIndex((p2) => p2.id === p.id) === -1) {
         oldPlayerIds.push(p.id);
+      }
     });
 
     const oldPlayers = await playerModel.fetchPlayersInBulkByIds(oldPlayerIds);
@@ -136,11 +149,16 @@ export const updateTeamById = async (params, updatedFields) => {
           await playerModel.updatePlayer({ id: p.id }, { team: null });
         })
       ),
+      Promise.all( 
+        updatedRoster.map(async (p) => {
+          await playerModel.updatePlayer({ id: p.id }, { team : { id: team.id, ownerId: team.owner.id }});
+        })
+      )
     ]);
   }
 
   if (updatedFields.owner?.id) {
-    const user = await userModel.getUser(updatedFields.owner.id);
+    const user = await userModel.getUser({ id: updatedFields.owner.id });
     if (user.teams?.length >= maxTeamsLimit) {
       throw new MaxTeamsLimitReached(user.id);
     }
@@ -149,7 +167,7 @@ export const updateTeamById = async (params, updatedFields) => {
       userModel.removeTeamFromUserById(team.owner.id, team.id),
       userModel.addTeamToUserById(updatedFields.owner.id, team.id),
       Promise.all(
-        team.players.map(async (p) => {
+        (updatedFields.players || team.players).map(async (p) => {
           await playerModel.updatePlayer(
             { id: p.id },
             {
