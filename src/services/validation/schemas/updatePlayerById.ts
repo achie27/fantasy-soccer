@@ -1,3 +1,5 @@
+import { playerModel } from '../../../models';
+
 export default {
   $async: true,
   type: 'object',
@@ -10,6 +12,7 @@ export default {
     },
     type: {
       type: 'string',
+      enum: playerModel.playerTypes
     },
     country: {
       type: 'string',

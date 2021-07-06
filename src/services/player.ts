@@ -1,6 +1,6 @@
 import { NothingToUpdate } from '../lib/exceptions';
 import { utilityService } from '../services';
-import { playerModel, teamModel } from '../models';
+import { playerModel, teamModel, transferModel } from '../models';
 
 const generateDOB = () => {
   const birthdate = new Date();
@@ -126,9 +126,12 @@ export const updatePlayer = async (params, updatedFields) => {
       { id: updates.team.id },
       { skip: 0, limit: 1 }
     );
-
     player.value = updates.value || player.value;
-    await teamModel.addPlayerToTeam(newTeam.id, player);
+
+    await Promise.all([
+      teamModel.addPlayerToTeam(newTeam.id, player),
+      transferModel.deleteOpenTransferOfPlayerById(player.id)
+    ]);
 
     updates.team = { id: newTeam.id, ownerId: newTeam.owner.id };
   }
@@ -139,8 +142,11 @@ export const updatePlayer = async (params, updatedFields) => {
 };
 
 export const deletePlayer = async (player) => {
-  await teamModel.removePlayerFromTeam(player.team.id, player);
-  await playerModel.deletePlayer(player.id);
+  await Promise.all([
+    transferModel.deleteOpenTransferOfPlayerById(player.id),
+    teamModel.removePlayerFromTeam(player.team.id, player),
+    playerModel.deletePlayer(player.id),
+  ]);
 };
 
 export const getUncappedPlayers = async (params) => {

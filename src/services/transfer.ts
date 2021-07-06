@@ -6,6 +6,7 @@ import {
   PlayerNotFound,
   InvalidTransferRequest,
   InvalidInput,
+  TransferNotFound,
 } from '../lib/exceptions';
 
 import { playerService, teamService, utilityService } from '../services';
@@ -100,6 +101,16 @@ export const fetchTransfers = async (params, options) => {
     delete modelParams.playerId;
   }
 
+  if (modelParams.playerFirstName) {
+    modelParams.player.firstName = modelParams.playerFirstName;
+    delete modelParams.playerFirstName;
+  }
+
+  if (modelParams.playerLastName) {
+    modelParams.player.lastName = modelParams.playerLastName;
+    delete modelParams.playerLastName;
+  }
+
   if (modelParams.playerCountry) {
     modelParams.player.country = modelParams.playerCountry;
     delete modelParams.playerCountry;
@@ -125,7 +136,7 @@ export const fetchTransfers = async (params, options) => {
 
 export const updateTransferById = async (params, updatedFields) => {
   const transfer = await transferModel.fetchTransferById(params);
-  if (!transfer) throw new TransferNotOpen(params.id);
+  if (!transfer) throw new TransferNotFound(params.id);
   if (transfer.status !== 'OPEN') throw new TransferNotOpen(transfer.id);
 
   if (updatedFields.player?.id) {

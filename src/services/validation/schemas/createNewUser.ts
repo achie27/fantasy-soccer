@@ -9,6 +9,7 @@ export default {
     },
     password: {
       type: 'string',
+      minLength: 1
     },
     roles: {
       type: 'array',
