@@ -164,7 +164,6 @@ export const updateTeam = async (
 ): Promise<void> => {
   const res = await Team.updateOne(params as any, { $set: updates });
   if (res.n === 0) throw new TeamNotFound(params.id);
-
 };
 
 export const deleteTeam = async (id: string): Promise<void> => {

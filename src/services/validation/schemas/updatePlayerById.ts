@@ -21,7 +21,7 @@ export default {
     },
     value: {
       type: 'number',
-      minimum: 0
+      minimum: 0,
     },
     team: {
       type: 'object',

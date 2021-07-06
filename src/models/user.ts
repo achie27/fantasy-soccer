@@ -96,9 +96,10 @@ export const updateUserById = async (
   toUpdate: utilityService.AtLeastOne<Omit<IUser, 'id'>>
 ): Promise<void> => {
   try {
-
     if (toUpdate.auth?.password) {
-      toUpdate.auth.password = await utilityService.hash(toUpdate.auth.password);
+      toUpdate.auth.password = await utilityService.hash(
+        toUpdate.auth.password
+      );
     }
 
     const res = await User.updateOne({ id }, { $set: toUpdate });

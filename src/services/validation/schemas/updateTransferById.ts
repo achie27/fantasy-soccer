@@ -14,7 +14,7 @@ export default {
     },
     buyNowPrice: {
       type: 'number',
-      minimum: 0
+      minimum: 0,
     },
   },
   minProperties: 1,

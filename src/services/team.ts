@@ -121,7 +121,8 @@ export const updateTeamById = async (params, updatedFields) => {
     if (newRecruitContractExpense > (updatedFields.budget || team.budget)) {
       throw new InadequateBudget(team.id);
     } else {
-      updatedFields.budget = (updatedFields.budget || team.budget) - newRecruitContractExpense;
+      updatedFields.budget =
+        (updatedFields.budget || team.budget) - newRecruitContractExpense;
     }
 
     updatedFields.value = updatedRoster.reduce(
@@ -149,11 +150,14 @@ export const updateTeamById = async (params, updatedFields) => {
           await playerModel.updatePlayer({ id: p.id }, { team: null });
         })
       ),
-      Promise.all( 
+      Promise.all(
         updatedRoster.map(async (p) => {
-          await playerModel.updatePlayer({ id: p.id }, { team : { id: team.id, ownerId: team.owner.id }});
+          await playerModel.updatePlayer(
+            { id: p.id },
+            { team: { id: team.id, ownerId: team.owner.id } }
+          );
         })
-      )
+      ),
     ]);
   }
 
