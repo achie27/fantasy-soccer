@@ -51,7 +51,9 @@ app.use((err, req, res, next) => {
   }
 });
 
-const server = app.listen(serverPort, async () => {
+(async () => {
+  let server;
+
   try {
     const options: Record<string, any> = {};
     if (dbTLS) {
@@ -63,15 +65,16 @@ const server = app.listen(serverPort, async () => {
     await mongoose.connect(dbUri, options);
     mongoose.set('debug', true);
 
+    server = app.listen(serverPort);
     logger.log('Server running');
   } catch (e) {
     logger.error(e);
     logger.log('Shutting down the app');
 
-    server.close();
+    server && server.close();
     process.exit(1);
   }
-});
+})();
 
 process.on('uncaughtException', (err) => {
   logger.error(err);
