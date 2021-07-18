@@ -8,3 +8,5 @@ export const refreshTokenSecret: string = process.env.REFRESH_TOKEN_SECRET;
 export const refreshTokenExpiry: number = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export const dbUri: string = process.env.MONGO_URI;
+export const dbTLS: boolean = process.env.MONGO_CA_CERT ? true: false;
+export const dbCert: string = process.env.MONGO_CA_CERT;

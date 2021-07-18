@@ -1,3 +1,4 @@
+import fs from 'fs';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -5,7 +6,7 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import cp from 'cookie-parser';
 
-import { serverPort, dbUri } from './config';
+import { serverPort, dbUri, dbTLS, dbCert } from './config';
 import {
   authRouter,
   userRouter,
@@ -52,9 +53,17 @@ app.use((err, req, res, next) => {
 
 const server = app.listen(serverPort, async () => {
   try {
-    logger.log('Server running');
-    await mongoose.connect(dbUri);
+    const options: Record<string, any> = {};
+    if (dbTLS) {
+      fs.writeFileSync('./mongo.crt', dbCert);
+      options.tls = true;
+      options.tlsCAFile = './mongo.crt'
+    }
+    
+    await mongoose.connect(dbUri, options);
     mongoose.set('debug', true);
+
+    logger.log('Server running');
   } catch (e) {
     logger.error(e);
     logger.log('Shutting down the app');

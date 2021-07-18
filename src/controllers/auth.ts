@@ -1,4 +1,4 @@
-import { refreshTokenExpiry } from '../config';
+import { refreshTokenExpiry, accessTokenExpiry } from '../config';
 import express from 'express';
 
 import {
@@ -43,10 +43,15 @@ export const generateNewToken = async (
     const refreshToken = authService.generateRefreshToken(user);
 
     return res
+      .cookie('access-token', accessToken, {
+        maxAge: accessTokenExpiry,
+        httpOnly: true,
+        secure: true,
+      })
       .cookie('refresh-token', refreshToken, {
         maxAge: refreshTokenExpiry,
         httpOnly: true,
-        // secure: true,
+        secure: true,
       })
       .status(200)
       .json({ data: { id: user.id, accessToken } });
